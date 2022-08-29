@@ -1,20 +1,10 @@
 import { PhonePlan } from '../../../src/domain/entities'
 import { DuplicatePlanDurationError, InvalidPlanDurationError } from '../../../src/domain/erros'
 import { AddPhonePlanUseCase } from '../../../src/domain/useCases'
+import { Controller } from '../../../src/presentation/protocols/controller'
+import { HttpResponse } from '../../../src/presentation/protocols/http'
+import { Validator } from '../../../src/presentation/protocols/validator'
 import { makeFakePhonePlan } from '../../domain/mocks'
-
-type HttpResponse = {
-  statusCode: number
-  body: any
-}
-
-interface Validator {
-  validate(data: any): Error
-}
-
-interface Controller<T = any> {
-  handle(req: T): Promise<HttpResponse>
-}
 
 const ok = (data: any): HttpResponse => ({
   body: data,
