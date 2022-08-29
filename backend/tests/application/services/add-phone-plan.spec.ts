@@ -28,19 +28,33 @@ class AddPhonePlanService implements AddPhonePlanUseCase {
   }
 }
 
+type SutTypes = {
+  repo: AddPhonePlanRepositoryMock,
+  sut: AddPhonePlanService
+}
+
+const makeSut = (): SutTypes => {
+  const repo = new AddPhonePlanRepositoryMock()
+  const sut = new AddPhonePlanService(repo)
+
+  return {
+    sut,
+    repo
+  }
+}
+
+const makeFakePhonePlan = (): PhonePlan => ({
+  id: 'any_phone_plan_id',
+  tax: 0.1,
+  durationInMinutes: 30
+})
+
 describe('add-phone-plan-service', () => {
   it('should call repository with right data', async () => {
-    const repo = new AddPhonePlanRepositoryMock()
-    const sut = new AddPhonePlanService(repo)
+    const { sut, repo } = makeSut()
 
-    const fakePlan: PhonePlan = {
-      id: 'any_phone_plan_id',
-      tax: 0.1,
-      durationInMinutes: 30
-    }
+    await sut.add(makeFakePhonePlan())
 
-    await sut.add(fakePlan)
-
-    expect(repo.input).toEqual(fakePlan)
+    expect(repo.input).toEqual(makeFakePhonePlan())
   })
 })
