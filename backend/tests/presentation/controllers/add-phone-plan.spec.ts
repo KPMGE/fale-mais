@@ -42,10 +42,23 @@ class AddPhonePlanController implements Controller<PhonePlan> {
   }
 }
 
+type SutTypes = {
+  sut: AddPhonePlanController,
+  serviceMock: AddPhonePlanServiceMock
+}
+
+const makeSut = (): SutTypes => {
+  const serviceMock = new AddPhonePlanServiceMock()
+  const sut = new AddPhonePlanController(serviceMock)
+
+  return {
+    sut, serviceMock
+  }
+}
+
 describe('add-phone-plan-controller', () => {
   it('should call service with right data', async () => {
-    const serviceMock = new AddPhonePlanServiceMock()
-    const sut = new AddPhonePlanController(serviceMock)
+    const { sut, serviceMock } = makeSut()
 
     await sut.handle(makeFakePhonePlan())
 
