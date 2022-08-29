@@ -1,28 +1,8 @@
-import { AddPhonePlanRepository, GetPhonePlanByDurationRepository } from "../../../src/application/repositories"
 import { AddPhonePlanService } from "../../../src/application/services/add-plan"
 import { PhonePlan } from "../../../src/domain/entities"
 import { DuplicatePlanDurationError, InvalidPlanDurationError } from "../../../src/domain/erros"
-
-class AddPhonePlanRepositoryMock implements AddPhonePlanRepository {
-  input = {}
-  callsCount = 0
-  async add(newPlan: PhonePlan): Promise<PhonePlan> {
-    this.input = newPlan
-    this.callsCount++
-    return newPlan
-  }
-}
-
-class GetPhonePlanByDurationRepositoryMock implements GetPhonePlanByDurationRepository {
-  input = 0
-  output = null
-  async getByDuration(duration: number): Promise<PhonePlan> {
-    this.input = duration
-    return this.output
-  }
-}
-
-
+import { makeFakePhonePlan } from "../../domain/mocks"
+import { AddPhonePlanRepositoryMock, GetPhonePlanByDurationRepositoryMock } from "../mocks"
 
 type SutTypes = {
   addRepo: AddPhonePlanRepositoryMock
@@ -41,12 +21,6 @@ const makeSut = (): SutTypes => {
     getByDurationRepo
   }
 }
-
-const makeFakePhonePlan = (): PhonePlan => ({
-  id: 'any_phone_plan_id',
-  tax: 0.1,
-  durationInMinutes: 30
-})
 
 describe('add-phone-plan-service', () => {
   it('should call repository with right data', async () => {
