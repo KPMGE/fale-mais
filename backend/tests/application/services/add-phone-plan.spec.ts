@@ -1,13 +1,7 @@
+import { AddPhonePlanRepository, GetPhonePlanByDurationRepository } from "../../../src/application/repositories"
+import { AddPhonePlanService } from "../../../src/application/services/add-plan"
 import { PhonePlan } from "../../../src/domain/entities"
-import { AddPhonePlanUseCase } from "../../../src/domain/useCases"
-
-interface AddPhonePlanRepository {
-  add(newPlan: PhonePlan): Promise<PhonePlan>
-}
-
-interface GetPhonePlanByDurationRepository {
-  getByDuration(duration: number): Promise<PhonePlan>
-}
+import { DuplicatePlanDurationError, InvalidPlanDurationError } from "../../../src/domain/erros"
 
 class AddPhonePlanRepositoryMock implements AddPhonePlanRepository {
   input = {}
@@ -28,22 +22,7 @@ class GetPhonePlanByDurationRepositoryMock implements GetPhonePlanByDurationRepo
   }
 }
 
-class AddPhonePlanService implements AddPhonePlanUseCase {
-  constructor(
-    private readonly addPhonePlanRepo: AddPhonePlanRepository,
-    private readonly getPlanByDurationRepo: GetPhonePlanByDurationRepository,
-  ) { }
 
-  async add(newPlan: PhonePlan): Promise<PhonePlan> {
-    if (newPlan.durationInMinutes <= 0) throw new InvalidPlanDurationError()
-
-    const plan = await this.getPlanByDurationRepo.getByDuration(newPlan.durationInMinutes)
-    if (plan) throw new DuplicatePlanDurationError()
-
-    const addedPlan = await this.addPhonePlanRepo.add(newPlan)
-    return addedPlan
-  }
-}
 
 type SutTypes = {
   addRepo: AddPhonePlanRepositoryMock
@@ -68,22 +47,6 @@ const makeFakePhonePlan = (): PhonePlan => ({
   tax: 0.1,
   durationInMinutes: 30
 })
-
-class DuplicatePlanDurationError extends Error {
-  constructor() {
-    super('DuplicatePlanDuration ')
-    this.message = 'There is a plan with this duration already!'
-    this.name = 'DuplicatePlanDuration'
-  }
-}
-
-class InvalidPlanDurationError extends Error {
-  constructor() {
-    super('InvalidPlanDurationError ')
-    this.message = 'duration in minutes must be greater than 0!'
-    this.name = 'InvalidPlanDurationError'
-  }
-}
 
 describe('add-phone-plan-service', () => {
   it('should call repository with right data', async () => {
