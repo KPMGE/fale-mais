@@ -1,8 +1,4 @@
-type PhonePlan = {
-  id: string
-  durationInMinutes: number
-  tax: number
-}
+import { PhonePlan } from "../../../src/domain/entities"
 
 interface AddPhonePlanRepository {
   add(newPlan: PhonePlan): Promise<PhonePlan>
