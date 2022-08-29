@@ -1,25 +1,11 @@
 import { PhonePlan } from '../../../src/domain/entities'
 import { DuplicatePlanDurationError, InvalidPlanDurationError } from '../../../src/domain/erros'
 import { AddPhonePlanUseCase } from '../../../src/domain/useCases'
+import { badRequest, ok, serverError } from '../../../src/presentation/helpers'
 import { Controller } from '../../../src/presentation/protocols/controller'
 import { HttpResponse } from '../../../src/presentation/protocols/http'
 import { Validator } from '../../../src/presentation/protocols/validator'
 import { makeFakePhonePlan } from '../../domain/mocks'
-
-const ok = (data: any): HttpResponse => ({
-  body: data,
-  statusCode: 200
-})
-
-const badRequest = (error: Error): HttpResponse => ({
-  body: error,
-  statusCode: 400,
-})
-
-const serverError = (error: Error): HttpResponse => ({
-  body: error,
-  statusCode: 500,
-})
 
 class AddPhonePlanServiceMock implements AddPhonePlanUseCase {
   input = null
