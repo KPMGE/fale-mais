@@ -1,4 +1,5 @@
 import { PhonePlan } from '../../../src/domain/entities'
+import { DuplicatePlanDurationError, InvalidPlanDurationError } from '../../../src/domain/erros'
 import { AddPhonePlanUseCase } from '../../../src/domain/useCases'
 import { makeFakePhonePlan } from '../../domain/mocks'
 
@@ -21,6 +22,11 @@ const badRequest = (error: Error): HttpResponse => ({
   statusCode: 400,
 })
 
+const serverError = (error: Error): HttpResponse => ({
+  body: error,
+  statusCode: 500,
+})
+
 class AddPhonePlanServiceMock implements AddPhonePlanUseCase {
   input = null
   output = makeFakePhonePlan()
@@ -37,7 +43,10 @@ class AddPhonePlanController implements Controller<PhonePlan> {
       const addedPhonePlan = await this.service.add(req)
       return ok(addedPhonePlan)
     } catch (error) {
-      return badRequest(error)
+      if (error instanceof InvalidPlanDurationError || error instanceof DuplicatePlanDurationError) {
+        return badRequest(error)
+      }
+      return serverError(error)
     }
   }
 }
@@ -72,5 +81,19 @@ describe('add-phone-plan-controller', () => {
 
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body).toEqual(makeFakePhonePlan())
+  })
+
+  it('should badRequest if service returns InvalidPhoneNumberError or DuplicatePlanDuration', async () => {
+    const { sut, serviceMock } = makeSut()
+
+    serviceMock.add = () => { throw new InvalidPlanDurationError() }
+    let httpResponse = await sut.handle(makeFakePhonePlan())
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidPlanDurationError())
+
+    serviceMock.add = () => { throw new DuplicatePlanDurationError() }
+    httpResponse = await sut.handle(makeFakePhonePlan())
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new DuplicatePlanDurationError())
   })
 })
