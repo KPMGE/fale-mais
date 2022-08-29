@@ -8,6 +8,10 @@ type HttpResponse = {
   body: any
 }
 
+interface Validator {
+  validate(data: any): Error
+}
+
 interface Controller<T = any> {
   handle(req: T): Promise<HttpResponse>
 }
@@ -37,8 +41,15 @@ class AddPhonePlanServiceMock implements AddPhonePlanUseCase {
 }
 
 class AddPhonePlanController implements Controller<PhonePlan> {
-  constructor(private readonly service: AddPhonePlanUseCase) { }
+  constructor(
+    private readonly service: AddPhonePlanUseCase,
+    private readonly validator: Validator
+  ) { }
+
   async handle(req: PhonePlan): Promise<HttpResponse> {
+    const error = this.validator.validate(req)
+    if (error) return badRequest(error)
+
     try {
       const addedPhonePlan = await this.service.add(req)
       return ok(addedPhonePlan)
@@ -51,17 +62,35 @@ class AddPhonePlanController implements Controller<PhonePlan> {
   }
 }
 
+class ValidatorMock implements Validator {
+  output = null
+  validate(data: any): Error {
+    return this.output
+  }
+}
+
 type SutTypes = {
   sut: AddPhonePlanController,
   serviceMock: AddPhonePlanServiceMock
+  validatorMock: ValidatorMock
 }
 
 const makeSut = (): SutTypes => {
   const serviceMock = new AddPhonePlanServiceMock()
-  const sut = new AddPhonePlanController(serviceMock)
+  const validatorMock = new ValidatorMock()
+  const sut = new AddPhonePlanController(serviceMock, validatorMock)
 
   return {
-    sut, serviceMock
+    sut,
+    serviceMock,
+    validatorMock
+  }
+}
+
+class MissingParamError extends Error {
+  constructor(fieldName: string) {
+    super(`Missing field ${fieldName}!`)
+    this.name = 'MissingParamError '
   }
 }
 
@@ -95,6 +124,16 @@ describe('add-phone-plan-controller', () => {
     httpResponse = await sut.handle(makeFakePhonePlan())
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new DuplicatePlanDurationError())
+  })
+
+  it('should return badRequest validator returns error', async () => {
+    const { sut, validatorMock } = makeSut()
+    validatorMock.validate = () => { return new Error('validator error') }
+
+    const httpResponse = await sut.handle(makeFakePhonePlan())
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new Error('validator error'))
   })
 
   it('should return serverError if service throws any other error', async () => {
