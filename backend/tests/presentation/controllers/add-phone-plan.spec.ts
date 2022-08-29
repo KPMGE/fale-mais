@@ -64,4 +64,13 @@ describe('add-phone-plan-controller', () => {
 
     expect(serviceMock.input).toEqual(makeFakePhonePlan())
   })
+
+  it('should return the added phone plan on success', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle(makeFakePhonePlan())
+
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual(makeFakePhonePlan())
+  })
 })
