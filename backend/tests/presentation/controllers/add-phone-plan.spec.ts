@@ -1,49 +1,7 @@
-import { PhonePlan } from '../../../src/domain/entities'
 import { DuplicatePlanDurationError, InvalidPlanDurationError } from '../../../src/domain/erros'
-import { AddPhonePlanUseCase } from '../../../src/domain/useCases'
-import { badRequest, ok, serverError } from '../../../src/presentation/helpers'
-import { Controller } from '../../../src/presentation/protocols/controller'
-import { HttpResponse } from '../../../src/presentation/protocols/http'
-import { Validator } from '../../../src/presentation/protocols/validator'
+import { AddPhonePlanController } from '../../../src/presentation/controllers/add-phone-plan'
 import { makeFakePhonePlan } from '../../domain/mocks'
-
-class AddPhonePlanServiceMock implements AddPhonePlanUseCase {
-  input = null
-  output = makeFakePhonePlan()
-  async add(newPlan: PhonePlan): Promise<PhonePlan> {
-    this.input = newPlan
-    return this.output
-  }
-}
-
-class AddPhonePlanController implements Controller<PhonePlan> {
-  constructor(
-    private readonly service: AddPhonePlanUseCase,
-    private readonly validator: Validator
-  ) { }
-
-  async handle(req: PhonePlan): Promise<HttpResponse> {
-    const error = this.validator.validate(req)
-    if (error) return badRequest(error)
-
-    try {
-      const addedPhonePlan = await this.service.add(req)
-      return ok(addedPhonePlan)
-    } catch (error) {
-      if (error instanceof InvalidPlanDurationError || error instanceof DuplicatePlanDurationError) {
-        return badRequest(error)
-      }
-      return serverError(error)
-    }
-  }
-}
-
-class ValidatorMock implements Validator {
-  output = null
-  validate(data: any): Error {
-    return this.output
-  }
-}
+import { AddPhonePlanServiceMock, ValidatorMock } from '../mocks'
 
 type SutTypes = {
   sut: AddPhonePlanController,
@@ -60,13 +18,6 @@ const makeSut = (): SutTypes => {
     sut,
     serviceMock,
     validatorMock
-  }
-}
-
-class MissingParamError extends Error {
-  constructor(fieldName: string) {
-    super(`Missing field ${fieldName}!`)
-    this.name = 'MissingParamError '
   }
 }
 
