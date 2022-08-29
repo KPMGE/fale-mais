@@ -42,8 +42,11 @@ class AddPhonePlanService implements AddPhonePlanUseCase {
   ) { }
 
   async add(newPlan: PhonePlan): Promise<PhonePlan> {
+    if (newPlan.durationInMinutes <= 0) throw new InvalidPlanDurationError()
+
     const plan = await this.getPlanByDurationRepo.getByDuration(newPlan.durationInMinutes)
-    if (plan) throw new InvalidPlanDuration()
+    if (plan) throw new DuplicatePlanDurationError()
+
     const addedPlan = await this.addPhonePlanRepo.add(newPlan)
     return addedPlan
   }
@@ -73,11 +76,19 @@ const makeFakePhonePlan = (): PhonePlan => ({
   durationInMinutes: 30
 })
 
-class InvalidPlanDuration extends Error {
+class DuplicatePlanDurationError extends Error {
   constructor() {
-    super('InvalidPlanDuration ')
+    super('DuplicatePlanDuration ')
     this.message = 'There is a plan with this duration already!'
-    this.name = 'InvalidPlanDuration'
+    this.name = 'DuplicatePlanDuration'
+  }
+}
+
+class InvalidPlanDurationError extends Error {
+  constructor() {
+    super('InvalidPlanDurationError ')
+    this.message = 'duration in minutes must be greater than 0!'
+    this.name = 'InvalidPlanDurationError'
   }
 }
 
@@ -106,6 +117,16 @@ describe('add-phone-plan-service', () => {
 
     const promise = sut.add(makeFakePhonePlan())
 
-    await expect(promise).rejects.toThrowError(new InvalidPlanDuration())
+    await expect(promise).rejects.toThrowError(new DuplicatePlanDurationError())
+  })
+
+  it('should throw error if duration provided is less than or equal to 0', async () => {
+    const { sut } = makeSut()
+
+    const invalidDurationPlan: PhonePlan = { ...makeFakePhonePlan(), durationInMinutes: 0 }
+
+    const promise = sut.add(invalidDurationPlan)
+
+    await expect(promise).rejects.toThrowError(new InvalidPlanDurationError())
   })
 })
