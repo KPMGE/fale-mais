@@ -96,4 +96,14 @@ describe('add-phone-plan-controller', () => {
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new DuplicatePlanDurationError())
   })
+
+  it('should return serverError if service throws any other error', async () => {
+    const { sut, serviceMock } = makeSut()
+    serviceMock.add = () => { throw new Error('service error') }
+
+    const httpResponse = await sut.handle(makeFakePhonePlan())
+
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new Error('service error'))
+  })
 })
