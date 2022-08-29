@@ -1,4 +1,5 @@
 import { PhonePlan } from "../../../src/domain/entities"
+import { AddPhonePlanUseCase } from "../../../src/domain/useCases"
 
 interface AddPhonePlanRepository {
   add(newPlan: PhonePlan): Promise<PhonePlan>
@@ -6,10 +7,6 @@ interface AddPhonePlanRepository {
 
 interface GetPhonePlanByDurationRepository {
   getByDuration(duration: number): Promise<PhonePlan>
-}
-
-interface AddPhonePlanUseCase {
-  add(newPlan: PhonePlan): Promise<PhonePlan>
 }
 
 class AddPhonePlanRepositoryMock implements AddPhonePlanRepository {
