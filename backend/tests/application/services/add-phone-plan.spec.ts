@@ -14,8 +14,10 @@ interface AddPhonePlanUseCase {
 
 class AddPhonePlanRepositoryMock implements AddPhonePlanRepository {
   input = {}
+  callsCount = 0
   async add(newPlan: PhonePlan): Promise<PhonePlan> {
     this.input = newPlan
+    this.callsCount++
     return newPlan
   }
 }
@@ -56,5 +58,13 @@ describe('add-phone-plan-service', () => {
     await sut.add(makeFakePhonePlan())
 
     expect(repo.input).toEqual(makeFakePhonePlan())
+  })
+
+  it('should call repository only once', async () => {
+    const { sut, repo } = makeSut()
+
+    await sut.add(makeFakePhonePlan())
+
+    expect(repo.callsCount).toBe(1)
   })
 })
