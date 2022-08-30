@@ -1,3 +1,6 @@
+import { IdGenerator } from "../../../src/application/providers"
+import { IdGeneratorMock } from "../mocks"
+
 type PhoneCall = {
   id: string
   origin: string
@@ -26,10 +29,14 @@ class AddPhoneCallRepositorySpy implements AddPhoneCallRepository {
 }
 
 class AddPhoneCallService implements AddPhoneCallUseCase {
-  constructor(private readonly repo: AddPhoneCallRepository) { }
+  constructor(
+    private readonly repo: AddPhoneCallRepository,
+    private readonly idGenerator: IdGenerator
+  ) { }
 
   async add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
-    await this.repo.add({ ...newCall, id: '' })
+    const newCallWithId = { ...newCall, id: this.idGenerator.generate() }
+    await this.repo.add(newCallWithId)
     return null
   }
 }
@@ -41,12 +48,13 @@ const makeFakePhoneCall = (): AddPhoneCallUseCase.Props => ({
 })
 
 describe('add-phone-call-service', () => {
-  it('should call repository with right data', async () => {
+  it('should create an id for the phone call before sending it to the repository', async () => {
     const addRepoSpy = new AddPhoneCallRepositorySpy()
-    const sut = new AddPhoneCallService(addRepoSpy)
+    const idGeneratorMock = new IdGeneratorMock()
+    const sut = new AddPhoneCallService(addRepoSpy, idGeneratorMock)
 
     await sut.add(makeFakePhoneCall())
 
-    expect(addRepoSpy.input).toEqual({ ...makeFakePhoneCall(), id: '' })
+    expect(addRepoSpy.input).toEqual({ ...makeFakePhoneCall(), id: idGeneratorMock.output })
   })
 })
