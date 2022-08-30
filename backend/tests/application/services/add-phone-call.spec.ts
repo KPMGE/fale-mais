@@ -5,7 +5,6 @@ type PhoneCall = {
   pricePerMinue: number
 }
 
-
 export namespace AddPhoneCallUseCase {
   export type Props = Omit<PhoneCall, 'id'>
 }
@@ -35,19 +34,19 @@ class AddPhoneCallService implements AddPhoneCallUseCase {
   }
 }
 
+const makeFakePhoneCall = (): AddPhoneCallUseCase.Props => ({
+  destination: '000',
+  origin: '000',
+  pricePerMinue: 2.2,
+})
+
 describe('add-phone-call-service', () => {
   it('should call repository with right data', async () => {
     const addRepoSpy = new AddPhoneCallRepositorySpy()
     const sut = new AddPhoneCallService(addRepoSpy)
 
-    const fakePhoneCall = {
-      origin: '011',
-      destination: '017',
-      pricePerMinue: 1.90
-    }
+    await sut.add(makeFakePhoneCall())
 
-    await sut.add(fakePhoneCall)
-
-    expect(addRepoSpy.input).toEqual({ ...fakePhoneCall, id: '' })
+    expect(addRepoSpy.input).toEqual({ ...makeFakePhoneCall(), id: '' })
   })
 })
