@@ -35,11 +35,25 @@ class AddPhoneCallService implements AddPhoneCallUseCase {
     private readonly idGenerator: IdGenerator
   ) { }
 
-  async add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
-    if (newCall.originDDD.length != 3) throw new InvalidDDDError(newCall.originDDD)
-    if (newCall.destinationDDD.length != 3) throw new InvalidDDDError(newCall.destinationDDD)
 
-    const newCallWithId = { ...newCall, id: this.idGenerator.generate() }
+  private hasOnlyNumbers(str): boolean {
+    return /^[0-9]+$/.test(str);
+  }
+
+  async add({ originDDD, destinationDDD, pricePerMinue }: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
+
+    if (originDDD.length != 3) throw new InvalidDDDError(originDDD)
+    if (destinationDDD.length != 3) throw new InvalidDDDError(destinationDDD)
+
+    if (!this.hasOnlyNumbers(originDDD)) throw new InvalidDDDError(originDDD)
+    if (!this.hasOnlyNumbers(destinationDDD)) throw new InvalidDDDError(destinationDDD)
+
+    const newCallWithId = {
+      id: this.idGenerator.generate(),
+      destinationDDD,
+      originDDD,
+      pricePerMinue
+    }
     const addedCall = await this.repo.add(newCallWithId)
     return addedCall
   }
@@ -74,6 +88,8 @@ class InvalidDDDError extends Error {
     this.name = 'InvalidDDDError '
   }
 }
+
+
 
 describe('add-phone-call-service', () => {
   it('should create an id for the phone call before sending it to the repository', async () => {
@@ -111,5 +127,13 @@ describe('add-phone-call-service', () => {
     const invalidDestination = { ...makeFakePhoneCall(), destinationDDD: 'invalid_destination' }
     promise = sut.add(invalidDestination)
     await expect(promise).rejects.toThrowError(new InvalidDDDError('invalid_destination'))
+  })
+
+  it('should throw if originDDD or destinationDDD are not numbers', async () => {
+    const { sut } = makeSut()
+
+    const invalidOrigin = { ...makeFakePhoneCall(), originDDD: '0a0' }
+    let promise = sut.add(invalidOrigin)
+    await expect(promise).rejects.toThrowError(new InvalidDDDError('0a0'))
   })
 })
