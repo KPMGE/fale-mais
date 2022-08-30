@@ -1,15 +1,11 @@
-import { ListPhonePlansUseCase } from "../../../domain/useCases"
-import { ok, serverError } from "../../../presentation/helpers"
-import { Controller, HttpResponse } from "../../../presentation/protocols"
+import { ListPhonePlansService } from "../../../application/services/list-plans";
+import { InMemoryPhonePlanRepository } from "../../../infrastructure/repositories/in-memory/in-memory-phone-plan";
+import { ListPhonePlansController } from "../../../presentation/controllers";
+import { Controller } from "../../../presentation/protocols";
 
-export class ListPhonePlansController implements Controller {
-  constructor(private readonly service: ListPhonePlansUseCase) { }
-  async handle(): Promise<HttpResponse> {
-    try {
-      const plans = await this.service.list()
-      return ok(plans)
-    } catch (error) {
-      return serverError(error)
-    }
-  }
+export const makeListPhonePlansController = (): Controller => {
+  const repo = new InMemoryPhonePlanRepository()
+  const service = new ListPhonePlansService(repo)
+  const controller = new ListPhonePlansController(service)
+  return controller
 }

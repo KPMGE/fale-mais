@@ -1,4 +1,4 @@
-import { ListPhonePlansController } from "../../../src/main/factories/controllers"
+import { ListPhonePlansController } from "../../../src/presentation/controllers/list-phone-plans"
 import { ListPhonePlansServiceMock } from "../mocks"
 
 describe('list-phone-plans-controller', () => {
