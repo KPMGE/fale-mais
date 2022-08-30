@@ -1,18 +1,7 @@
-import { PhoneCall } from "../../../src/domain/entities"
 import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
-import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
 import { AddPhoneCallController } from "../../../src/presentation/controllers"
 import { makeFakePhoneCall } from "../../domain/mocks"
-import { ValidatorMock } from "../mocks"
-
-class AddPhoneCallServiceMock implements AddPhoneCallUseCase {
-  input = null
-  output = { ...makeFakePhoneCall(), id: 'some id' }
-  async add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
-    this.input = newCall
-    return this.output
-  }
-}
+import { AddPhoneCallServiceMock, ValidatorMock } from "../mocks"
 
 type SutTypes = {
   sut: AddPhoneCallController,
