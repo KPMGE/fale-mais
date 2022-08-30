@@ -22,10 +22,24 @@ class AddPhoneCallController implements Controller<AddPhoneCallUseCase.Props> {
   }
 }
 
+type SutTypes = {
+  sut: AddPhoneCallController,
+  serviceMock: AddPhoneCallServiceMock
+}
+
+const makeSut = (): SutTypes => {
+  const serviceMock = new AddPhoneCallServiceMock()
+  const sut = new AddPhoneCallController(serviceMock)
+
+  return {
+    sut,
+    serviceMock
+  }
+}
+
 describe('add-phone-call-controller', () => {
   it('should return added phone call on success', async () => {
-    const serviceMock = new AddPhoneCallServiceMock()
-    const sut = new AddPhoneCallController(serviceMock)
+    const { serviceMock, sut } = makeSut()
 
     const httpResponse = await sut.handle(makeFakePhoneCall())
 
