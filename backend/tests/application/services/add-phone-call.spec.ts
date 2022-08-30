@@ -1,20 +1,7 @@
 import { IdGenerator } from "../../../src/application/providers"
+import { PhoneCall } from "../../../src/domain/entities"
+import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
 import { IdGeneratorMock } from "../mocks"
-
-type PhoneCall = {
-  id: string
-  originDDD: string
-  destinationDDD: string
-  pricePerMinue: number
-}
-
-export namespace AddPhoneCallUseCase {
-  export type Props = Omit<PhoneCall, 'id'>
-}
-
-interface AddPhoneCallUseCase {
-  add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall>
-}
 
 interface AddPhoneCallRepository {
   add(newCall: PhoneCall): Promise<PhoneCall>
@@ -36,7 +23,7 @@ class AddPhoneCallService implements AddPhoneCallUseCase {
   ) { }
 
 
-  private hasOnlyNumbers(str): boolean {
+  private hasOnlyNumbers(str: string): boolean {
     return /^[0-9]+$/.test(str);
   }
 
