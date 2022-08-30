@@ -22,9 +22,10 @@ interface AddPhoneCallRepository {
 
 class AddPhoneCallRepositorySpy implements AddPhoneCallRepository {
   input = null
+  output = null
   async add(newCall: PhoneCall): Promise<PhoneCall> {
-    this.input = newCall
-    return null
+    this.input = this.output = newCall
+    return this.output
   }
 }
 
@@ -36,8 +37,8 @@ class AddPhoneCallService implements AddPhoneCallUseCase {
 
   async add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
     const newCallWithId = { ...newCall, id: this.idGenerator.generate() }
-    await this.repo.add(newCallWithId)
-    return null
+    const addedCall = await this.repo.add(newCallWithId)
+    return addedCall
   }
 }
 
@@ -71,5 +72,13 @@ describe('add-phone-call-service', () => {
     await sut.add(makeFakePhoneCall())
 
     expect(addRepoSpy.input).toEqual({ ...makeFakePhoneCall(), id: idGeneratorMock.output })
+  })
+
+  it('should return the added phone call', async () => {
+    const { addRepoSpy, sut } = makeSut()
+
+    const addedCall = await sut.add(makeFakePhoneCall())
+
+    expect(addedCall).toEqual(addRepoSpy.output)
   })
 })
