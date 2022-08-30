@@ -16,7 +16,6 @@ jobs:
         with:
           node-version: '14'
           cache: 'yarn'
+      - run: cd backend
       - run: yarn
-        working-directory: backend
       - run: yarn test
-        working-directory: backend
