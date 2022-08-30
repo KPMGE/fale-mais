@@ -1,27 +1,5 @@
-import { PhonePlan } from "../../../src/domain/entities"
-import { ListPhonePlansUseCase } from "../../../src/domain/useCases"
-import { ok, serverError } from "../../../src/presentation/helpers"
-import { Controller, HttpResponse } from "../../../src/presentation/protocols"
-import { makeFakePhonePlan } from "../../domain/mocks"
-
-class ListPhonePlansController implements Controller {
-  constructor(private readonly service: ListPhonePlansUseCase) { }
-  async handle(): Promise<HttpResponse> {
-    try {
-      const plans = await this.service.list()
-      return ok(plans)
-    } catch (error) {
-      return serverError(error)
-    }
-  }
-}
-
-class ListPhonePlansServiceMock implements ListPhonePlansUseCase {
-  output = [makeFakePhonePlan(), makeFakePhonePlan()]
-  async list(): Promise<PhonePlan[]> {
-    return this.output
-  }
-}
+import { ListPhonePlansController } from "../../../src/main/factories/controllers"
+import { ListPhonePlansServiceMock } from "../mocks"
 
 describe('list-phone-plans-controller', () => {
   it('should return status ok with right data on success', async () => {
