@@ -81,4 +81,13 @@ describe('add-phone-call-service', () => {
 
     expect(addedCall).toEqual(addRepoSpy.output)
   })
+
+  it('should throw if repository throws', async () => {
+    const { addRepoSpy, sut } = makeSut()
+    addRepoSpy.add = () => { throw new Error('repo error') }
+
+    const promise = sut.add(makeFakePhoneCall())
+
+    await expect(promise).rejects.toThrowError(new Error('repo error'))
+  })
 })
