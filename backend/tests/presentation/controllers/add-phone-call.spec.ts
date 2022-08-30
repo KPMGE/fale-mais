@@ -1,6 +1,7 @@
 import { PhoneCall } from "../../../src/domain/entities"
+import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
 import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
-import { ok } from "../../../src/presentation/helpers"
+import { badRequest, ok } from "../../../src/presentation/helpers"
 import { Controller, HttpResponse } from "../../../src/presentation/protocols"
 import { makeFakePhoneCall } from "../../domain/mocks"
 
@@ -17,8 +18,12 @@ class AddPhoneCallController implements Controller<AddPhoneCallUseCase.Props> {
   constructor(private readonly service: AddPhoneCallUseCase) { }
 
   async handle(req: AddPhoneCallUseCase.Props): Promise<HttpResponse> {
-    const addedPhoneCall = await this.service.add(req)
-    return ok(addedPhoneCall)
+    try {
+      const addedPhoneCall = await this.service.add(req)
+      return ok(addedPhoneCall)
+    } catch (error) {
+      if (error instanceof InvalidDDDError) return badRequest(error)
+    }
   }
 }
 
@@ -45,5 +50,15 @@ describe('add-phone-call-controller', () => {
 
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body).toEqual(serviceMock.output)
+  })
+
+  it('should badRequest if service throws InvalidDDDError', async () => {
+    const { serviceMock, sut } = makeSut()
+    serviceMock.add = () => { throw new InvalidDDDError('invalid_ddd') }
+
+    const httpResponse = await sut.handle(makeFakePhoneCall())
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidDDDError('invalid_ddd'))
   })
 })
