@@ -20,4 +20,4 @@ jobs:
           cmd: test # will run `yarn test` command
 defaults:
   run:
-    working-directory: client # The working directory path
+    working-directory: backend # The working directory path
