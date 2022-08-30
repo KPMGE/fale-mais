@@ -15,9 +15,9 @@ jobs:
       - uses: borales/actions-yarn@v3.0.0
         with:
           cmd: install # will run `yarn install` command
+          working-directory: backend # The working directory path
       - uses: borales/actions-yarn@v3.0.0
         with:
           cmd: test # will run `yarn test` command
-defaults:
-  run:
-    working-directory: backend # The working directory path
+          working-directory: backend # The working directory path
+    
