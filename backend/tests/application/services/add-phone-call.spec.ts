@@ -1,20 +1,9 @@
 import { IdGenerator } from "../../../src/application/providers"
+import { AddPhoneCallRepository } from "../../../src/application/repositories/add-phone-call"
 import { PhoneCall } from "../../../src/domain/entities"
 import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
 import { IdGeneratorMock } from "../mocks"
-
-interface AddPhoneCallRepository {
-  add(newCall: PhoneCall): Promise<PhoneCall>
-}
-
-class AddPhoneCallRepositorySpy implements AddPhoneCallRepository {
-  input = null
-  output = null
-  async add(newCall: PhoneCall): Promise<PhoneCall> {
-    this.input = this.output = newCall
-    return this.output
-  }
-}
+import { AddPhoneCallRepositorySpy } from "../mocks/add-phone-call"
 
 class AddPhoneCallService implements AddPhoneCallUseCase {
   constructor(
