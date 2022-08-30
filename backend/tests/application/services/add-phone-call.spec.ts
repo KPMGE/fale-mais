@@ -1,46 +1,8 @@
-import { IdGenerator } from "../../../src/application/providers"
-import { AddPhoneCallRepository } from "../../../src/application/repositories/add-phone-call"
-import { PhoneCall } from "../../../src/domain/entities"
+import { AddPhoneCallService } from "../../../src/application/services"
 import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
-import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
+import { makeFakePhoneCall } from "../../domain/mocks"
 import { IdGeneratorMock } from "../mocks"
 import { AddPhoneCallRepositorySpy } from "../mocks/add-phone-call"
-
-class AddPhoneCallService implements AddPhoneCallUseCase {
-  constructor(
-    private readonly repo: AddPhoneCallRepository,
-    private readonly idGenerator: IdGenerator
-  ) { }
-
-
-  private hasOnlyNumbers(str: string): boolean {
-    return /^[0-9]+$/.test(str);
-  }
-
-  async add({ originDDD, destinationDDD, pricePerMinue }: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
-
-    if (originDDD.length != 3) throw new InvalidDDDError(originDDD)
-    if (destinationDDD.length != 3) throw new InvalidDDDError(destinationDDD)
-
-    if (!this.hasOnlyNumbers(originDDD)) throw new InvalidDDDError(originDDD)
-    if (!this.hasOnlyNumbers(destinationDDD)) throw new InvalidDDDError(destinationDDD)
-
-    const newCallWithId = {
-      id: this.idGenerator.generate(),
-      destinationDDD,
-      originDDD,
-      pricePerMinue
-    }
-    const addedCall = await this.repo.add(newCallWithId)
-    return addedCall
-  }
-}
-
-const makeFakePhoneCall = (): AddPhoneCallUseCase.Props => ({
-  destinationDDD: '000',
-  originDDD: '000',
-  pricePerMinue: 2.2,
-})
 
 type SutTypes = {
   sut: AddPhoneCallService,
