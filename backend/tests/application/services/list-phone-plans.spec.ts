@@ -1,14 +1,5 @@
-import { ListPhonePlansRepository } from "../../../src/application/repositories/list-phone-plans"
 import { ListPhonePlansService } from "../../../src/application/services/list-plans"
-import { PhonePlan } from "../../../src/domain/entities"
-import { makeFakePhonePlan } from "../../domain/mocks"
-
-class ListPhonePlansRepositoryMock implements ListPhonePlansRepository {
-  output = [makeFakePhonePlan(), makeFakePhonePlan()]
-  async list(): Promise<PhonePlan[]> {
-    return this.output
-  }
-}
+import { ListPhonePlansRepositoryMock } from "../mocks"
 
 describe('list-phone-plans-service', () => {
   it('should return plans from repository', async () => {
