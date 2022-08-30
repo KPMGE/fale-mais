@@ -1,6 +1,7 @@
 import { IdGenerator } from "../../../src/application/providers"
 import { AddPhoneCallRepository } from "../../../src/application/repositories/add-phone-call"
 import { PhoneCall } from "../../../src/domain/entities"
+import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
 import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
 import { IdGeneratorMock } from "../mocks"
 import { AddPhoneCallRepositorySpy } from "../mocks/add-phone-call"
@@ -57,15 +58,6 @@ const makeSut = (): SutTypes => {
     addRepoSpy
   }
 }
-
-class InvalidDDDError extends Error {
-  constructor(invalidDDD: string) {
-    super(`${invalidDDD} is not a valid DDD!`)
-    this.name = 'InvalidDDDError '
-  }
-}
-
-
 
 describe('add-phone-call-service', () => {
   it('should create an id for the phone call before sending it to the repository', async () => {
