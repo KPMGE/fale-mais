@@ -3,32 +3,36 @@ import { PhonePlan } from "../../../src/domain/entities"
 import { DuplicatePlanDurationError, InvalidPlanDurationError } from "../../../src/domain/erros"
 import { makeFakePhonePlan } from "../../domain/mocks"
 import { AddPhonePlanRepositoryMock, GetPhonePlanByDurationRepositoryMock } from "../mocks"
+import { IdGeneratorMock } from "../mocks/id-generator"
 
 type SutTypes = {
   addRepo: AddPhonePlanRepositoryMock
   getByDurationRepo: GetPhonePlanByDurationRepositoryMock
   sut: AddPhonePlanService
+  idGeneratorMock: IdGeneratorMock
 }
 
 const makeSut = (): SutTypes => {
   const addRepo = new AddPhonePlanRepositoryMock()
+  const idGeneratorMock = new IdGeneratorMock()
   const getByDurationRepo = new GetPhonePlanByDurationRepositoryMock()
-  const sut = new AddPhonePlanService(addRepo, getByDurationRepo)
+  const sut = new AddPhonePlanService(addRepo, getByDurationRepo, idGeneratorMock)
 
   return {
     sut,
     addRepo,
-    getByDurationRepo
+    getByDurationRepo,
+    idGeneratorMock
   }
 }
 
 describe('add-phone-plan-service', () => {
   it('should call repository with right data', async () => {
-    const { sut, addRepo } = makeSut()
+    const { sut, addRepo, idGeneratorMock } = makeSut()
 
     await sut.add(makeFakePhonePlan())
 
-    expect(addRepo.input).toEqual(makeFakePhonePlan())
+    expect(addRepo.input).toEqual({ ...makeFakePhonePlan(), id: idGeneratorMock.output })
   })
 
   it('should call repository only once', async () => {
@@ -58,5 +62,13 @@ describe('add-phone-plan-service', () => {
     const promise = sut.add(invalidDurationPlan)
 
     await expect(promise).rejects.toThrowError(new InvalidPlanDurationError())
+  })
+
+  it('should save the phone plan with id from id generator', async () => {
+    const { sut, idGeneratorMock } = makeSut()
+
+    const addedPlan = await sut.add(makeFakePhonePlan())
+
+    expect(addedPlan.id).toBe(idGeneratorMock.output)
   })
 })
