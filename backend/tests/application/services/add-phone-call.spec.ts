@@ -3,8 +3,8 @@ import { IdGeneratorMock } from "../mocks"
 
 type PhoneCall = {
   id: string
-  origin: string
-  destination: string
+  originDDD: string
+  destinationDDD: string
   pricePerMinue: number
 }
 
@@ -36,6 +36,9 @@ class AddPhoneCallService implements AddPhoneCallUseCase {
   ) { }
 
   async add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
+    if (newCall.originDDD.length != 3) throw new InvalidDDDError(newCall.originDDD)
+    if (newCall.destinationDDD.length != 3) throw new InvalidDDDError(newCall.destinationDDD)
+
     const newCallWithId = { ...newCall, id: this.idGenerator.generate() }
     const addedCall = await this.repo.add(newCallWithId)
     return addedCall
@@ -43,8 +46,8 @@ class AddPhoneCallService implements AddPhoneCallUseCase {
 }
 
 const makeFakePhoneCall = (): AddPhoneCallUseCase.Props => ({
-  destination: '000',
-  origin: '000',
+  destinationDDD: '000',
+  originDDD: '000',
   pricePerMinue: 2.2,
 })
 
@@ -62,6 +65,13 @@ const makeSut = (): SutTypes => {
     sut,
     idGeneratorMock,
     addRepoSpy
+  }
+}
+
+class InvalidDDDError extends Error {
+  constructor(invalidDDD: string) {
+    super(`${invalidDDD} is not a valid DDD!`)
+    this.name = 'InvalidDDDError '
   }
 }
 
@@ -89,5 +99,17 @@ describe('add-phone-call-service', () => {
     const promise = sut.add(makeFakePhoneCall())
 
     await expect(promise).rejects.toThrowError(new Error('repo error'))
+  })
+
+  it('should throw if originDDD or destinationDDD length is different than 3', async () => {
+    const { sut } = makeSut()
+
+    const invalidOrigin = { ...makeFakePhoneCall(), originDDD: 'invalid_origin' }
+    let promise = sut.add(invalidOrigin)
+    await expect(promise).rejects.toThrowError(new InvalidDDDError('invalid_origin'))
+
+    const invalidDestination = { ...makeFakePhoneCall(), destinationDDD: 'invalid_destination' }
+    promise = sut.add(invalidDestination)
+    await expect(promise).rejects.toThrowError(new InvalidDDDError('invalid_destination'))
   })
 })
