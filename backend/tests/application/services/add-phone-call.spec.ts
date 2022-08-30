@@ -47,11 +47,26 @@ const makeFakePhoneCall = (): AddPhoneCallUseCase.Props => ({
   pricePerMinue: 2.2,
 })
 
+type SutTypes = {
+  sut: AddPhoneCallService,
+  idGeneratorMock: IdGeneratorMock,
+  addRepoSpy: AddPhoneCallRepositorySpy
+}
+
+const makeSut = (): SutTypes => {
+  const addRepoSpy = new AddPhoneCallRepositorySpy()
+  const idGeneratorMock = new IdGeneratorMock()
+  const sut = new AddPhoneCallService(addRepoSpy, idGeneratorMock)
+  return {
+    sut,
+    idGeneratorMock,
+    addRepoSpy
+  }
+}
+
 describe('add-phone-call-service', () => {
   it('should create an id for the phone call before sending it to the repository', async () => {
-    const addRepoSpy = new AddPhoneCallRepositorySpy()
-    const idGeneratorMock = new IdGeneratorMock()
-    const sut = new AddPhoneCallService(addRepoSpy, idGeneratorMock)
+    const { addRepoSpy, idGeneratorMock, sut } = makeSut()
 
     await sut.add(makeFakePhoneCall())
 
