@@ -1,8 +1,7 @@
 import { PhoneCall } from "../../../src/domain/entities"
 import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
 import { AddPhoneCallUseCase } from "../../../src/domain/useCases"
-import { badRequest, ok, serverError } from "../../../src/presentation/helpers"
-import { Controller, HttpResponse, Validator } from "../../../src/presentation/protocols"
+import { AddPhoneCallController } from "../../../src/presentation/controllers"
 import { makeFakePhoneCall } from "../../domain/mocks"
 import { ValidatorMock } from "../mocks"
 
@@ -12,26 +11,6 @@ class AddPhoneCallServiceMock implements AddPhoneCallUseCase {
   async add(newCall: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
     this.input = newCall
     return this.output
-  }
-}
-
-class AddPhoneCallController implements Controller<AddPhoneCallUseCase.Props> {
-  constructor(
-    private readonly service: AddPhoneCallUseCase,
-    private readonly validator: Validator
-  ) { }
-
-  async handle(req: AddPhoneCallUseCase.Props): Promise<HttpResponse> {
-    const err = this.validator.validate(req)
-    if (err) return badRequest(err)
-
-    try {
-      const addedPhoneCall = await this.service.add(req)
-      return ok(addedPhoneCall)
-    } catch (error) {
-      if (error instanceof InvalidDDDError) return badRequest(error)
-      return serverError(error)
-    }
   }
 }
 
