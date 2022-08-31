@@ -48,4 +48,13 @@ describe('list-phone-calls-service', () => {
 
     expect(phoneCalls).toEqual(repo.output)
   })
+
+  it('should throw error if repository throws', async () => {
+    const { sut, repo } = makeSut()
+    repo.list = () => { throw new Error('repo error') }
+
+    const promise = sut.list()
+
+    await expect(promise).rejects.toThrowError(new Error('repo error'))
+  })
 })
