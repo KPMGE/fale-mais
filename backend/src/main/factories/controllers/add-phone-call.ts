@@ -8,7 +8,7 @@ import { makeAddPhoneCallValidation } from "../validation";
 export const makeAddPhoneCallController = (): Controller => {
   const repo = new InMemoryPhoneCallRepository()
   const idGenerator = new UuidGenerator()
-  const service = new AddPhoneCallService(repo, idGenerator)
+  const service = new AddPhoneCallService(repo, idGenerator, repo)
   const controller = new AddPhoneCallController(service, makeAddPhoneCallValidation())
   return controller
 }

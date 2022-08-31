@@ -1,13 +1,16 @@
 import { PhoneCall } from "../../domain/entities";
+import { DuplicatePhoneCallError } from "../../domain/erros";
 import { InvalidDDDError } from "../../domain/erros/invalid-ddd";
 import { AddPhoneCallUseCase } from "../../domain/useCases";
 import { IdGenerator } from "../providers";
+import { GetPhoneCallByDDDRepository } from "../repositories";
 import { AddPhoneCallRepository } from "../repositories/add-phone-call";
 
 export class AddPhoneCallService implements AddPhoneCallUseCase {
   constructor(
     private readonly repo: AddPhoneCallRepository,
-    private readonly idGenerator: IdGenerator
+    private readonly idGenerator: IdGenerator,
+    private readonly getCallByDDDRepo: GetPhoneCallByDDDRepository
   ) { }
 
 
@@ -23,6 +26,8 @@ export class AddPhoneCallService implements AddPhoneCallUseCase {
     if (!this.hasOnlyNumbers(originDDD)) throw new InvalidDDDError(originDDD)
     if (!this.hasOnlyNumbers(destinationDDD)) throw new InvalidDDDError(destinationDDD)
 
+    const foundPhoneCall = await this.getCallByDDDRepo.getByDDD(originDDD, destinationDDD)
+    if (foundPhoneCall) throw new DuplicatePhoneCallError()
 
     const newCallWithId = {
       id: this.idGenerator.generate(),
