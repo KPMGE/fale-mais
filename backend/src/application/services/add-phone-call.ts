@@ -15,7 +15,7 @@ export class AddPhoneCallService implements AddPhoneCallUseCase {
     return /^[0-9]+$/.test(str);
   }
 
-  async add({ originDDD, destinationDDD, pricePerMinue }: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
+  async add({ originDDD, destinationDDD, pricePerMinute }: AddPhoneCallUseCase.Props): Promise<PhoneCall> {
 
     if (originDDD.length != 3) throw new InvalidDDDError(originDDD)
     if (destinationDDD.length != 3) throw new InvalidDDDError(destinationDDD)
@@ -23,12 +23,14 @@ export class AddPhoneCallService implements AddPhoneCallUseCase {
     if (!this.hasOnlyNumbers(originDDD)) throw new InvalidDDDError(originDDD)
     if (!this.hasOnlyNumbers(destinationDDD)) throw new InvalidDDDError(destinationDDD)
 
+
     const newCallWithId = {
       id: this.idGenerator.generate(),
       destinationDDD,
       originDDD,
-      pricePerMinue
+      pricePerMinute
     }
+
     const addedCall = await this.repo.add(newCallWithId)
     return addedCall
   }

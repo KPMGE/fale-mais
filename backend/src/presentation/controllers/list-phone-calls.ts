@@ -2,12 +2,12 @@ import { ListPhoneCallsUseCase } from "../../domain/useCases"
 import { ok, serverError } from "../helpers"
 import { Controller, HttpResponse } from "../protocols"
 
-export class ListPhonePlansController implements Controller {
+export class ListPhoneCallsController implements Controller {
   constructor(private readonly service: ListPhoneCallsUseCase) { }
-  async handle(): Promise<HttpResponse> {
+  async handle(req: any): Promise<HttpResponse> {
     try {
-      const plans = await this.service.list()
-      return ok(plans)
+      const phoneCalls = await this.service.list()
+      return ok(phoneCalls)
     } catch (error) {
       return serverError(error)
     }
