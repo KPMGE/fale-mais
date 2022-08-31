@@ -1,23 +1,27 @@
 import { AddPhoneCallService } from "../../../src/application/services"
+import { DuplicatePhoneCallError } from "../../../src/domain/erros"
 import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
 import { makeFakePhoneCall } from "../../domain/mocks"
-import { IdGeneratorMock } from "../mocks"
+import { GetPhoneCallByDDDRepositoryMock, IdGeneratorMock } from "../mocks"
 import { AddPhoneCallRepositorySpy } from "../mocks/add-phone-call"
 
 type SutTypes = {
   sut: AddPhoneCallService,
   idGeneratorMock: IdGeneratorMock,
   addRepoSpy: AddPhoneCallRepositorySpy
+  getByDDDRepo: GetPhoneCallByDDDRepositoryMock
 }
 
 const makeSut = (): SutTypes => {
   const addRepoSpy = new AddPhoneCallRepositorySpy()
   const idGeneratorMock = new IdGeneratorMock()
-  const sut = new AddPhoneCallService(addRepoSpy, idGeneratorMock)
+  const getByDDDRepo = new GetPhoneCallByDDDRepositoryMock()
+  const sut = new AddPhoneCallService(addRepoSpy, idGeneratorMock, getByDDDRepo)
   return {
     sut,
     idGeneratorMock,
-    addRepoSpy
+    addRepoSpy,
+    getByDDDRepo
   }
 }
 
@@ -65,5 +69,13 @@ describe('add-phone-call-service', () => {
     const invalidOrigin = { ...makeFakePhoneCall(), originDDD: '0a0' }
     let promise = sut.add(invalidOrigin)
     await expect(promise).rejects.toThrowError(new InvalidDDDError('0a0'))
+  })
+
+  it('should throw if there is a call with the same originDDD and destinationDDD already', async () => {
+    const { sut, getByDDDRepo } = makeSut()
+    getByDDDRepo.getByDDD = () => Promise.resolve({ ...makeFakePhoneCall(), id: 'any_id' })
+
+    let promise = sut.add(makeFakePhoneCall())
+    await expect(promise).rejects.toThrowError(new DuplicatePhoneCallError())
   })
 })
