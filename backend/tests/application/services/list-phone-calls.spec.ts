@@ -1,19 +1,5 @@
-import { ListPhoneCallsRepository } from "../../../src/application/repositories"
 import { ListPhoneCallsService } from "../../../src/application/services"
-import { PhoneCall } from "../../../src/domain/entities"
-import { makeFakePhoneCall } from "../../domain/mocks"
-
-class ListPhoneCallsRepositoryStub implements ListPhoneCallsRepository {
-  private fakePhoneCall: PhoneCall = {
-    ...makeFakePhoneCall(),
-    id: 'any id'
-  }
-  output = [this.fakePhoneCall, this.fakePhoneCall, this.fakePhoneCall]
-
-  async list(): Promise<PhoneCall[]> {
-    return this.output
-  }
-}
+import { ListPhoneCallsRepositoryStub } from "../mocks"
 
 type SutTypes = {
   sut: ListPhoneCallsService,
