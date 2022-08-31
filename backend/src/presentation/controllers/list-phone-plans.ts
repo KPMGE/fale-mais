@@ -1,9 +1,9 @@
-import { ListPhonePlansUseCase } from "../../domain/useCases"
+import { ListPhoneCallsUseCase } from "../../domain/useCases"
 import { ok, serverError } from "../helpers"
 import { Controller, HttpResponse } from "../protocols"
 
 export class ListPhonePlansController implements Controller {
-  constructor(private readonly service: ListPhonePlansUseCase) { }
+  constructor(private readonly service: ListPhoneCallsUseCase) { }
   async handle(): Promise<HttpResponse> {
     try {
       const plans = await this.service.list()
