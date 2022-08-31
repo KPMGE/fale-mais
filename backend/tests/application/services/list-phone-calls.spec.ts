@@ -1,13 +1,7 @@
+import { ListPhoneCallsRepository } from "../../../src/application/repositories"
 import { PhoneCall } from "../../../src/domain/entities"
+import { ListPhoneCallsUseCase } from "../../../src/domain/useCases"
 import { makeFakePhoneCall } from "../../domain/mocks"
-
-interface ListPhoneCallsUseCase {
-  list(): Promise<PhoneCall[]>
-}
-
-interface ListPhoneCallsRepository {
-  list(): Promise<PhoneCall[]>
-}
 
 class ListPhoneCallsRepositoryStub implements ListPhoneCallsRepository {
   private fakePhoneCall: PhoneCall = {
