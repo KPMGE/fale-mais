@@ -1,6 +1,6 @@
 import { ListPhoneCallsRepository } from "../../../src/application/repositories"
+import { ListPhoneCallsService } from "../../../src/application/services"
 import { PhoneCall } from "../../../src/domain/entities"
-import { ListPhoneCallsUseCase } from "../../../src/domain/useCases"
 import { makeFakePhoneCall } from "../../domain/mocks"
 
 class ListPhoneCallsRepositoryStub implements ListPhoneCallsRepository {
@@ -12,13 +12,6 @@ class ListPhoneCallsRepositoryStub implements ListPhoneCallsRepository {
 
   async list(): Promise<PhoneCall[]> {
     return this.output
-  }
-}
-
-class ListPhoneCallsService implements ListPhoneCallsUseCase {
-  constructor(private readonly repo: ListPhoneCallsRepository) { }
-  async list(): Promise<PhoneCall[]> {
-    return await this.repo.list()
   }
 }
 
