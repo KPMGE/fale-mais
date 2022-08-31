@@ -1,3 +1,4 @@
+import { DuplicatePhoneCallError } from "../../domain/erros"
 import { InvalidDDDError } from "../../domain/erros/invalid-ddd"
 import { AddPhoneCallUseCase } from "../../domain/useCases"
 import { badRequest, ok, serverError } from "../helpers"
@@ -17,7 +18,7 @@ export class AddPhoneCallController implements Controller<AddPhoneCallUseCase.Pr
       const addedPhoneCall = await this.service.add(req)
       return ok(addedPhoneCall)
     } catch (error) {
-      if (error instanceof InvalidDDDError) return badRequest(error)
+      if (error instanceof InvalidDDDError || error instanceof DuplicatePhoneCallError) return badRequest(error)
       return serverError(error)
     }
   }

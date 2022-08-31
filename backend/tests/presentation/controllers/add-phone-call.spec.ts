@@ -1,3 +1,4 @@
+import { DuplicatePhoneCallError } from "../../../src/domain/erros"
 import { InvalidDDDError } from "../../../src/domain/erros/invalid-ddd"
 import { AddPhoneCallController } from "../../../src/presentation/controllers"
 import { makeFakePhoneCall } from "../../domain/mocks"
@@ -39,6 +40,16 @@ describe('add-phone-call-controller', () => {
 
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new InvalidDDDError('invalid_ddd'))
+  })
+
+  it('should return badRequest if service throws DuplicatePhoneCallError', async () => {
+    const { serviceMock, sut } = makeSut()
+    serviceMock.add = () => { throw new DuplicatePhoneCallError() }
+
+    const httpResponse = await sut.handle(makeFakePhoneCall())
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new DuplicatePhoneCallError())
   })
 
   it('should return badRequest if validator returns error', async () => {
