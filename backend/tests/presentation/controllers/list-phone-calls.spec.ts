@@ -1,31 +1,5 @@
-import { PhoneCall } from "../../../src/domain/entities"
-import { ListPhoneCallsUseCase } from "../../../src/domain/useCases"
-import { ok, serverError } from "../../../src/presentation/helpers"
-import { Controller, HttpResponse } from "../../../src/presentation/protocols"
-import { makeFakePhoneCall } from "../../domain/mocks"
-
-class ListPhoneCallsController implements Controller {
-  constructor(private readonly service: ListPhoneCallsUseCase) { }
-  async handle(req: any): Promise<HttpResponse> {
-    try {
-      const phoneCalls = await this.service.list()
-      return ok(phoneCalls)
-    } catch (error) {
-      return serverError(error)
-    }
-  }
-}
-
-class ListPhoneCallsServiceStub implements ListPhoneCallsUseCase {
-  private fakePhoneCall = {
-    ...makeFakePhoneCall(),
-    id: 'any id'
-  }
-  output = [this.fakePhoneCall, this.fakePhoneCall, this.fakePhoneCall]
-  async list(): Promise<PhoneCall[]> {
-    return this.output
-  }
-}
+import { ListPhoneCallsController } from "../../../src/presentation/controllers"
+import { ListPhoneCallsServiceStub } from "../mocks"
 
 type SutTypes = {
   serviceStub: ListPhoneCallsServiceStub
