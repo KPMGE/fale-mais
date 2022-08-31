@@ -1,39 +1,6 @@
-import { PhonePlan } from "../../../src/domain/entities"
-import { makeFakePhonePlan } from "../../domain/mocks"
-
-interface GetPhonePlanByIdUseCase {
-  getById(planId: string): Promise<PhonePlan>
-}
-
-interface GetPhonePlanByIdRepository {
-  getById(planId: string): Promise<PhonePlan>
-}
-
-class PhonePlanNotFoundError extends Error {
-  constructor() {
-    super('phone not found!')
-    this.name = 'PhonePlanNotFoundError'
-  }
-}
-
-class GetPhonePlanByIdService implements GetPhonePlanByIdUseCase {
-  constructor(private readonly getByIdRepo: GetPhonePlanByIdRepository) { }
-
-  async getById(planId: string): Promise<PhonePlan> {
-    const foundPhonePlan = await this.getByIdRepo.getById(planId)
-    if (!foundPhonePlan) throw new PhonePlanNotFoundError()
-    return foundPhonePlan
-  }
-}
-
-class GetPhonePlanByIdRepositoryMock implements GetPhonePlanByIdRepository {
-  input = ""
-  output = makeFakePhonePlan()
-  async getById(planId: string): Promise<PhonePlan> {
-    this.input = planId
-    return this.output
-  }
-}
+import { GetPhonePlanByIdService } from "../../../src/application/services"
+import { PhonePlanNotFoundError } from "../../../src/domain/erros"
+import { GetPhonePlanByIdRepositoryMock } from "../mocks"
 
 type SutTypes = {
   sut: GetPhonePlanByIdService
