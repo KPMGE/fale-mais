@@ -1,30 +1,6 @@
-import { PhonePlan } from "../../../src/domain/entities"
 import { PhonePlanNotFoundError } from "../../../src/domain/erros"
-import { GetPhonePlanByIdUseCase } from "../../../src/domain/useCases"
-import { badRequest, ok, serverError } from "../../../src/presentation/helpers"
-import { Controller, HttpResponse } from "../../../src/presentation/protocols"
-import { makeFakePhonePlan } from "../../domain/mocks"
-
-class GetPhonePlanByIdController implements Controller {
-  constructor(private readonly service: GetPhonePlanByIdUseCase) { }
-
-  async handle(req: any): Promise<HttpResponse> {
-    try {
-      const foundPlan = await this.service.getById(req.planId)
-      return ok(foundPlan)
-    } catch (error) {
-      if (error instanceof PhonePlanNotFoundError) return badRequest(error)
-      return serverError(error)
-    }
-  }
-}
-
-class GetPhonePlanByIdServiceStub implements GetPhonePlanByIdUseCase {
-  output = makeFakePhonePlan()
-  async getById(planId: string): Promise<PhonePlan> {
-    return this.output
-  }
-}
+import { GetPhonePlanByIdController } from "../../../src/presentation/controllers"
+import { GetPhonePlanByIdServiceStub } from "../mocks"
 
 type SutTypes = {
   sut: GetPhonePlanByIdController,
