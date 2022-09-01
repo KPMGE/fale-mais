@@ -1,3 +1,5 @@
 export * from './invalid-duration'
 export * from './duplicate-duration'
 export * from './duplicate-phone-call'
+export * from './invalid-ddd'
+export * from './phone-plan-not-found'
