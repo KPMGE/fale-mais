@@ -49,4 +49,14 @@ describe('get-phone-plan-by-id-controller', () => {
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body).toEqual(serviceStub.output)
   })
+
+  it('should return badRequest if service throws PhonePlanNotFoundError', async () => {
+    const { serviceStub, sut } = makeSut()
+    serviceStub.getById = () => { throw new PhonePlanNotFoundError() }
+
+    const httpResponse = await sut.handle({ planId: 'any_plan_id' })
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new PhonePlanNotFoundError())
+  })
 })
