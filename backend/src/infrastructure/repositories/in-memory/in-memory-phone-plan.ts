@@ -1,11 +1,15 @@
-import { AddPhonePlanRepository, GetPhonePlanByDurationRepository, GetPhonePlanByIdRepository } from "../../../application/repositories";
+import {
+  AddPhonePlanRepository,
+  GetPhonePlanByDurationRepository,
+  GetPhonePlanByIdRepository,
+  ListPhonePlansRepository
+} from "../../../application/repositories";
 import { PhonePlan } from "../../../domain/entities";
-import { ListPhonePlansUseCase } from "../../../domain/useCases";
 
 let phonePlans: PhonePlan[] = []
 
 export class InMemoryPhonePlanRepository implements
-  AddPhonePlanRepository, GetPhonePlanByDurationRepository, ListPhonePlansUseCase, GetPhonePlanByIdRepository {
+  AddPhonePlanRepository, GetPhonePlanByDurationRepository, ListPhonePlansRepository, GetPhonePlanByIdRepository {
 
   async add(newPlan: PhonePlan): Promise<PhonePlan> {
     phonePlans.push(newPlan)

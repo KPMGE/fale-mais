@@ -1,11 +1,11 @@
 import { ListPhoneCallsService } from "../../../application/services";
-import { InMemoryPhoneCallRepository } from "../../../infrastructure/repositories/in-memory";
-import { ListPhonePlansController } from "../../../presentation/controllers";
+import { PostgresPhoneCallRepository } from "../../../infrastructure/repositories/postgres";
+import { ListPhoneCallsController } from "../../../presentation/controllers";
 import { Controller } from "../../../presentation/protocols";
 
 export const makeListPhoneCallsController = (): Controller => {
-  const repo = new InMemoryPhoneCallRepository()
+  const repo = new PostgresPhoneCallRepository()
   const service = new ListPhoneCallsService(repo)
-  const controller = new ListPhonePlansController(service)
+  const controller = new ListPhoneCallsController(service)
   return controller
 }
