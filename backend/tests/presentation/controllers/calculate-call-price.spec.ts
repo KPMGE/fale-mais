@@ -1,4 +1,4 @@
-import { PhonePlanNotFoundError } from "../../../src/domain/erros"
+import { PhoneCallNotFoundError, PhonePlanNotFoundError } from "../../../src/domain/erros"
 import { CalculateCallPriceController } from "../../../src/presentation/controllers"
 import { makefakeCalculatePriceInput } from "../../application/mocks"
 import { CalculateCallPriceServiceMock, ValidatorMock } from "../mocks"
@@ -44,6 +44,16 @@ describe('calculate-call-price-controller', () => {
 
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new PhonePlanNotFoundError())
+  })
+
+  it('should return badRequest if service throws PhoneCallNotFoundError', async () => {
+    const { sut, serviceMock } = makeSut()
+    serviceMock.calculate = () => { throw new PhoneCallNotFoundError() }
+
+    const httpResponse = await sut.handle(makefakeCalculatePriceInput())
+
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new PhoneCallNotFoundError())
   })
 
   it('should return serverError service throws', async () => {
