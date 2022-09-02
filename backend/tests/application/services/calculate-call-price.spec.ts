@@ -70,17 +70,20 @@ describe('calculate-call-price-service', () => {
     expect(resultCase1.priceWithPlan).toBe(withPlanCase1)
     expect(resultCase1.priceWithoutPlan).toBe(withoutPlanCase1)
 
-
     //  plan duration of 20 minutes 
     getPlanRepo.output.durationInMinutes = 20
     // call duration of 60 minutes
     const fakeInputCase2 = { ...makefakeCalculatePriceInput(), durationInMinutes: 60 }
 
-
     // the price without the plan is the same, the amountMinutes times the price per minute
     const withoutPlanCase2 = getCallRepo.output.pricePerMinute * fakeInputCase2.amountMinutes
+
     // the price with the plan is the amountMinutes minus the durationInMinutes of the plan, times the price per minute
-    const withPlanCase2 = (60 - 20) * getCallRepo.output.pricePerMinute
+    // that gives the price with the plan, but without the tax.
+    // the final price will be that price plus that one times the tax
+    const difference = 60 - 20
+    const priceWithPlanAndWithoutTax = difference * getCallRepo.output.pricePerMinute
+    const withPlanCase2 = priceWithPlanAndWithoutTax + priceWithPlanAndWithoutTax * getPlanRepo.output.tax
 
     const resultCase2 = await sut.calculate(fakeInputCase2)
 
