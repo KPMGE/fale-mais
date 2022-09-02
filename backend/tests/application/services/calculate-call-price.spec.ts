@@ -1,15 +1,27 @@
 import { CalculateCallPriceService } from "../../../src/application/services"
+import { PhoneCallNotFoundError, PhonePlanNotFoundError } from "../../../src/domain/erros"
 import {
   GetPhoneCallByDDDRepositoryMock,
   GetPhonePlanByIdRepositoryMock,
   makefakeCalculatePriceInput
 } from "../mocks"
 
+type SutTypes = {
+  sut: CalculateCallPriceService
+  getCallRepo: GetPhoneCallByDDDRepositoryMock
+  getPlanRepo: GetPhonePlanByIdRepositoryMock
+}
+
+const makeSut = (): SutTypes => {
+  const getCallRepo = new GetPhoneCallByDDDRepositoryMock()
+  const getPlanRepo = new GetPhonePlanByIdRepositoryMock()
+  const sut = new CalculateCallPriceService(getPlanRepo, getCallRepo)
+  return { getPlanRepo, getCallRepo, sut }
+}
+
 describe('calculate-call-price-service', () => {
   it('should call repository with right data', async () => {
-    const getCallRepo = new GetPhoneCallByDDDRepositoryMock()
-    const getPlanRepo = new GetPhonePlanByIdRepositoryMock()
-    const sut = new CalculateCallPriceService(getPlanRepo, getCallRepo)
+    const { getCallRepo, sut, getPlanRepo } = makeSut()
 
     await sut.calculate(makefakeCalculatePriceInput())
 
@@ -18,10 +30,29 @@ describe('calculate-call-price-service', () => {
     expect(getPlanRepo.input).toBe('any_phone_plan_id')
   })
 
+  it('should throw if getCallRepo returns null', async () => {
+    const { getCallRepo, sut } = makeSut()
+
+    // call repo returns null
+    getCallRepo.output = null
+
+    const promise = sut.calculate(makefakeCalculatePriceInput())
+    await expect(promise).rejects.toThrowError(new PhoneCallNotFoundError())
+  })
+
+  it('should throw if getPlanRepo returns null', async () => {
+    const { getPlanRepo, sut } = makeSut()
+
+    // plan repo returns null
+    getPlanRepo.output = null
+
+    const promise = sut.calculate(makefakeCalculatePriceInput())
+
+    await expect(promise).rejects.toThrowError(new PhonePlanNotFoundError())
+  })
+
   it('should calculate the price with and wihtout plan', async () => {
-    const getCallRepo = new GetPhoneCallByDDDRepositoryMock()
-    const getPlanRepo = new GetPhonePlanByIdRepositoryMock()
-    const sut = new CalculateCallPriceService(getPlanRepo, getCallRepo)
+    const { getCallRepo, sut, getPlanRepo } = makeSut()
 
     // plan duration of 60 minutes
     getPlanRepo.output.durationInMinutes = 60
