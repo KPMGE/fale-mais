@@ -15,6 +15,9 @@ export class InMemoryPhoneCallRepository implements AddPhoneCallRepository, List
   }
 
   async getByDDD(originDDD: string, destinationDDD: string): Promise<PhoneCall> {
-    return phoneCalls.find(phoneCall => phoneCall.originDDD == originDDD && phoneCall.destinationDDD == destinationDDD)
+    return phoneCalls.find(phoneCall => {
+      if (phoneCall.originDDD.localeCompare(originDDD) && phoneCall.destinationDDD.localeCompare(destinationDDD)) return true
+      return false
+    })
   }
 }
