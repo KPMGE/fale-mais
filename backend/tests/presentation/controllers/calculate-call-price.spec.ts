@@ -1,34 +1,6 @@
-import { CalculateCallPriceUseCase } from "../../../src/domain/useCases"
-import { badRequest, ok, serverError } from "../../../src/presentation/helpers"
-import { Controller, HttpResponse, Validator } from "../../../src/presentation/protocols"
+import { CalculateCallPriceController } from "../../../src/presentation/controllers"
 import { makefakeCalculatePriceInput } from "../../application/mocks"
-import { ValidatorMock } from "../mocks"
-
-class CalculateCallPriceServiceMock implements CalculateCallPriceUseCase {
-  output = { priceWithPlan: 4.2, priceWithoutPlan: 20 }
-  async calculate(input: CalculateCallPriceUseCase.Props): Promise<CalculateCallPriceUseCase.Result> {
-    return this.output
-  }
-}
-
-class CalculateCallPriceController implements Controller<CalculateCallPriceUseCase.Props> {
-  constructor(
-    private readonly service: CalculateCallPriceUseCase,
-    private readonly validator: Validator
-  ) { }
-
-  async handle(req: CalculateCallPriceUseCase.Props): Promise<HttpResponse> {
-    const err = this.validator.validate(req)
-    if (err) return badRequest(err)
-
-    try {
-      const result = await this.service.calculate(req)
-      return ok(result)
-    } catch (error) {
-      return serverError(error)
-    }
-  }
-}
+import { CalculateCallPriceServiceMock, ValidatorMock } from "../mocks"
 
 type SutTypes = {
   serviceMock: CalculateCallPriceServiceMock
