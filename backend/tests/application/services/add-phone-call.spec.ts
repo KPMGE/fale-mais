@@ -16,6 +16,7 @@ const makeSut = (): SutTypes => {
   const addRepoSpy = new AddPhoneCallRepositorySpy()
   const idGeneratorMock = new IdGeneratorMock()
   const getByDDDRepo = new GetPhoneCallByDDDRepositoryMock()
+  getByDDDRepo.output = null
   const sut = new AddPhoneCallService(addRepoSpy, idGeneratorMock, getByDDDRepo)
   return {
     sut,

@@ -1,49 +1,6 @@
-import { GetPhoneCallByDDDRepository, GetPhonePlanByIdRepository } from "../../../src/application/repositories"
+import { CalculateCallPriceService } from "../../../src/application/services"
+import { CalculateCallPriceUseCase } from "../../../src/domain/useCases"
 import { GetPhoneCallByDDDRepositoryMock, GetPhonePlanByIdRepositoryMock } from "../mocks"
-
-interface CalculateCallPriceUseCase {
-  calculate(input: CalculateCallPriceUseCase.Props): Promise<CalculateCallPriceUseCase.Result>
-}
-
-export namespace CalculateCallPriceUseCase {
-  export type Props = {
-    phonePlanId: string
-    amountMinutes: number
-    originDDD: string
-    destinationDDD: string
-  }
-  export type Result = {
-    priceWithPlan: number
-    priceWithoutPlan: number
-  }
-}
-
-class CalculateCallPriceService implements CalculateCallPriceUseCase {
-  constructor(
-    private readonly getPhonePlanRepo: GetPhonePlanByIdRepository,
-    private readonly getPhoneCallRepo: GetPhoneCallByDDDRepository
-  ) { }
-
-  async calculate(input: CalculateCallPriceUseCase.Props): Promise<CalculateCallPriceUseCase.Result> {
-    const { phonePlanId, originDDD, destinationDDD, amountMinutes } = input
-
-    const { durationInMinutes } = await this.getPhonePlanRepo.getById(phonePlanId)
-    const { pricePerMinute } = await this.getPhoneCallRepo.getByDDD(originDDD, destinationDDD)
-
-    const priceWithoutPlan = pricePerMinute * amountMinutes
-    let priceWithPlan = 0
-
-    if (durationInMinutes < amountMinutes) {
-      const difference = amountMinutes - durationInMinutes
-      priceWithPlan = difference * pricePerMinute
-    }
-
-    return {
-      priceWithoutPlan,
-      priceWithPlan
-    }
-  }
-}
 
 const makefakeCalculatePriceInput = (): CalculateCallPriceUseCase.Props => ({
   phonePlanId: 'any_phone_plan_id',
@@ -86,10 +43,12 @@ describe('calculate-call-price-service', () => {
     expect(resultCase1.priceWithPlan).toBe(withPlanCase1)
     expect(resultCase1.priceWithoutPlan).toBe(withoutPlanCase1)
 
+
     //  plan duration of 20 minutes 
     getPlanRepo.output.durationInMinutes = 20
     // call duration of 60 minutes
     const fakeInputCase2 = { ...makefakeCalculatePriceInput(), durationInMinutes: 60 }
+
 
     // the price without the plan is the same, the amountMinutes times the price per minute
     const withoutPlanCase2 = getCallRepo.output.pricePerMinute * fakeInputCase2.amountMinutes
