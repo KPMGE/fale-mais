@@ -1,13 +1,9 @@
 import { CalculateCallPriceService } from "../../../src/application/services"
-import { CalculateCallPriceUseCase } from "../../../src/domain/useCases"
-import { GetPhoneCallByDDDRepositoryMock, GetPhonePlanByIdRepositoryMock } from "../mocks"
-
-const makefakeCalculatePriceInput = (): CalculateCallPriceUseCase.Props => ({
-  phonePlanId: 'any_phone_plan_id',
-  originDDD: 'any_origin_ddd',
-  destinationDDD: 'any_destination_ddd',
-  amountMinutes: 60
-})
+import {
+  GetPhoneCallByDDDRepositoryMock,
+  GetPhonePlanByIdRepositoryMock,
+  makefakeCalculatePriceInput
+} from "../mocks"
 
 describe('calculate-call-price-service', () => {
   it('should call repository with right data', async () => {
