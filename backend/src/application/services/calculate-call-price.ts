@@ -1,3 +1,4 @@
+import { PhoneCallNotFoundError, PhonePlanNotFoundError } from "../../domain/erros"
 import { CalculateCallPriceUseCase } from "../../domain/useCases"
 import { GetPhoneCallByDDDRepository, GetPhonePlanByIdRepository } from "../repositories"
 
@@ -10,15 +11,23 @@ export class CalculateCallPriceService implements CalculateCallPriceUseCase {
   async calculate(input: CalculateCallPriceUseCase.Props): Promise<CalculateCallPriceUseCase.Result> {
     const { phonePlanId, originDDD, destinationDDD, amountMinutes } = input
 
-    const { durationInMinutes } = await this.getPhonePlanRepo.getById(phonePlanId)
-    const { pricePerMinute } = await this.getPhoneCallRepo.getByDDD(originDDD, destinationDDD)
+    const foundPhonePlan = await this.getPhonePlanRepo.getById(phonePlanId)
+    const foundPhoneCall = await this.getPhoneCallRepo.getByDDD(originDDD, destinationDDD)
+
+    if (!foundPhonePlan) throw new PhonePlanNotFoundError()
+    if (!foundPhoneCall) throw new PhoneCallNotFoundError()
+
+    const { durationInMinutes, tax } = foundPhonePlan
+    const { pricePerMinute } = foundPhoneCall
 
     const priceWithoutPlan = pricePerMinute * amountMinutes
     let priceWithPlan = 0
 
     if (durationInMinutes < amountMinutes) {
       const difference = amountMinutes - durationInMinutes
-      priceWithPlan = difference * pricePerMinute
+      const priceWithoutTax = difference * pricePerMinute
+      const extraTax = priceWithoutTax * tax
+      priceWithPlan = priceWithoutTax + extraTax
     }
 
     return {
