@@ -5,6 +5,20 @@ import { useEffect, useState } from 'react'
 import { api } from '../axios/config'
 import { DropDownMenu } from '../components/DropDownMenu'
 
+type PhonePlan = {
+  id: string
+  name: string
+  durationInMinutes: number
+  tax: number
+}
+
+type PhoneCall = {
+  id: string
+  originDDD: string
+  destinationDDD: string
+  pricePerMinute: number
+}
+
 const Home: NextPage = () => {
   const [resultsOpen, setResultsOpen] = useState<boolean>(true)
   const [amountMinutes, setAmountMinutes] = useState<number | undefined>(undefined)
@@ -14,12 +28,13 @@ const Home: NextPage = () => {
   const [priceWithPlan, setPriceWithPlan] = useState<number>(-1)
   const [priceWithoutPlan, setPriceWithoutPlan] = useState<number>(-1)
 
-  const [plans, setPlans] = useState([])
-  const [calls, setCalls] = useState([])
+  const [plans, setPlans] = useState<PhonePlan[]>([])
+  const [calls, setCalls] = useState<PhoneCall[]>([])
 
 
   const getPhonePlanId = (): string => {
     const plan = plans.find(plan => plan.name === phonePlanName)
+    if (!plan) throw new Error('plan id not found!')
     return plan.id
   }
 
