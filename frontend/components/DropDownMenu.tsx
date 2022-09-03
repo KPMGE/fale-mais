@@ -15,7 +15,7 @@ export const DropDownMenu: React.FC<Props> = ({ elements, defaultValue }) => {
       <ul>
         {elements.map(element => {
           return (
-            <button onClick={() => setSelectedItem(element)}>
+            <button key={element} onClick={() => setSelectedItem(element)}>
               {element}
             </button>
           )
