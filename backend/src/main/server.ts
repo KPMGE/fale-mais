@@ -9,8 +9,8 @@ app.use(express.json())
 setupRoutes(app)
 
 pool.connect()
-  .then(() => console.log('database connected!'))
+  .then(() => {
+    console.log('database connected!')
+    app.listen(env.port, () => console.log(`Listening on port ${env.port}...`))
+  })
   .catch(err => console.error(err))
-
-app.listen(env.port, () => console.log(`Listening on port ${env.port}...`))
-
