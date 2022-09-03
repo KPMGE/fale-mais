@@ -8,6 +8,6 @@ import {
 
 export default (router: Router) => {
   router.post("/phone-call", expressRouteAdapter(makeAddPhoneCallController()))
-  router.get("/phone-call/price", expressRouteAdapter(makeCalculateCallPriceController()))
+  router.post("/phone-call/price", expressRouteAdapter(makeCalculateCallPriceController()))
   router.get("/phone-call", expressRouteAdapter(makeListPhoneCallsController()))
 }
