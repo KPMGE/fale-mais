@@ -4,10 +4,16 @@ import styles from '../styles/components/DropDownMenu.module.scss'
 type Props = {
   defaultValue: string
   elements: string[]
+  onSelect(item: string): void
 }
 
-export const DropDownMenu: React.FC<Props> = ({ elements, defaultValue }) => {
+export const DropDownMenu: React.FC<Props> = ({ elements, defaultValue, onSelect }) => {
   const [selectedItem, setSelectedItem] = useState<string>(defaultValue)
+
+  const clickHandler = (element: string) => {
+    setSelectedItem(element)
+    onSelect(element)
+  }
 
   return (
     <div className={styles.drop}>
@@ -15,7 +21,7 @@ export const DropDownMenu: React.FC<Props> = ({ elements, defaultValue }) => {
       <ul>
         {elements.map(element => {
           return (
-            <button key={element} onClick={() => setSelectedItem(element)}>
+            <button key={element} onClick={() => clickHandler(element)}>
               {element}
             </button>
           )

@@ -39,6 +39,12 @@ $dark_gray: #282828;
       }
     }
 
+    .dropDown {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+    }
+
     .calculateButton {
       background-color: $pink;
       height: 100px;
