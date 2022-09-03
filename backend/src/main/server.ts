@@ -1,9 +1,8 @@
 import express from 'express'
 import { env } from './config/env'
 import { setupRoutes } from './config/routes'
-import { pool } from '../infrastructure/repositories/postgres'
 import cors from 'cors'
-
+import { setupPostgresDb } from './config/postgres'
 
 const app = express()
 
@@ -14,9 +13,9 @@ app.use(cors({
 
 setupRoutes(app)
 
-pool.connect()
+// setup postgres database and start server
+setupPostgresDb()
   .then(() => {
-    console.log('database connected!')
     app.listen(env.port, () => console.log(`Listening on port ${env.port}...`))
   })
   .catch(err => console.error(err))
