@@ -1,0 +1,52 @@
+$grey: #49454F;
+$plum: #8e44ad;
+$pink: #6750A4;
+$shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 8px 0 rgba(0, 0, 0, 0.12);
+
+.drop {
+  font-family: Roboto, sans-serif;
+}
+
+.drop button {
+  color: darken($grey, 20%);
+  text-decoration: none;
+}
+
+.drop {
+  position: relative;
+  width: 200px;
+  padding: 8px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: $pink;
+  margin-right: 10px;
+  color: #fff;
+  
+  ul {
+    position: absolute;
+    left: 0;
+    top: 2em;
+    transition: all 0.3s ease;
+    transform: scale(0);
+    transform-origin: 0 0;
+    box-shadow: $shadow;
+    button {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: #fff;
+      padding: 1em 18px;
+      display: inline-block;
+      white-space: pre;
+      box-sizing: border-box;
+      &:hover {
+        background: lighten($grey, 30%);
+      }
+    }
+  }
+  &:hover {
+    ul {
+      transform: scale(1);
+    }
+  }
+}

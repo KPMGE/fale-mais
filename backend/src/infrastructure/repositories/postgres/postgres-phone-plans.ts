@@ -14,6 +14,7 @@ export class PostgresPhonePlanRepository implements AddPhonePlanRepository,
     return {
       tax: planFromDb.tax,
       id: planFromDb.id,
+      name: planFromDb.name,
       durationInMinutes: planFromDb.duration_in_minutes
     }
   }
@@ -23,8 +24,10 @@ export class PostgresPhonePlanRepository implements AddPhonePlanRepository,
   }
 
   async add(phonePlan: PhonePlan): Promise<PhonePlan> {
-    const { id, durationInMinutes, tax } = phonePlan
-    await pool.query('INSERT INTO phone_plans VALUES($1, $2, $3)', [id, durationInMinutes, tax])
+    console.log('new plan: ', phonePlan)
+
+    const { id, name, durationInMinutes, tax } = phonePlan
+    await pool.query('INSERT INTO phone_plans VALUES($1, $2, $3, $4)', [id, name, durationInMinutes, tax])
     return phonePlan
   }
 
@@ -37,6 +40,7 @@ export class PostgresPhonePlanRepository implements AddPhonePlanRepository,
   async getByDuration(duration: number): Promise<PhonePlan> {
     const result = await pool.query('SELECT * FROM phone_plans WHERE duration_in_minutes=$1', [duration])
     const planFromDb = result.rows[0]
+    if (!planFromDb) return null
     return this.map(planFromDb)
   }
 

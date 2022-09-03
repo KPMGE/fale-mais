@@ -6,6 +6,7 @@ export interface AddPhonePlanUseCase {
 
 export namespace AddPhonePlanUseCase {
   export type Props = {
+    name: string
     tax: number
     durationInMinutes: number
   }

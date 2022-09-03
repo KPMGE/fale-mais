@@ -1,0 +1,17 @@
+$pink: #6750A4;
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 50%;
+  width: 55%;
+  border: 2px solid $pink;
+  border-radius: 30px;
+
+  .closeButton {
+    position: relative;
+    margin-left: 90%;
+  }
+}
