@@ -30,6 +30,6 @@ export const setupPostgresDb = async () => {
   console.log('Csv calls saved to postgres!')
 
   // saves call plans from the .csv file
-  await saveCsvPlansToPostgres('assets/prices.csv')
+  await saveCsvPlansToPostgres('assets/plans.csv')
   console.log('Csv plans saved to postgres!')
 }
