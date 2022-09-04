@@ -12,12 +12,10 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: fale_mais
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 20s
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
       timeout: 5s
-      retries: 50
-    volumes:
-     - ./backend/backup/postgres-db:/var/lib/postgresql/data
+      retries: 10
     networks: 
       - fale_mais_api
 
