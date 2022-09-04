@@ -26,6 +26,8 @@ export class AddPhoneCallService implements AddPhoneCallUseCase {
     if (!this.hasOnlyNumbers(originDDD)) throw new InvalidDDDError(originDDD)
     if (!this.hasOnlyNumbers(destinationDDD)) throw new InvalidDDDError(destinationDDD)
 
+
+
     const foundPhoneCall = await this.getCallByDDDRepo.getByDDD(originDDD, destinationDDD)
     if (foundPhoneCall) throw new DuplicatePhoneCallError()
 
@@ -35,6 +37,7 @@ export class AddPhoneCallService implements AddPhoneCallUseCase {
       originDDD,
       pricePerMinute
     }
+
 
     const addedCall = await this.repo.add(newCallWithId)
     return addedCall

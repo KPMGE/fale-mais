@@ -8,8 +8,8 @@ COPY . .
 RUN npm --force install --global yarn
 RUN yarn install 
 
-EXPOSE 3333
-
 USER node
+
+EXPOSE 3000
 
 CMD [ "yarn", "dev" ]

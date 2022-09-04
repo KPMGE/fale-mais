@@ -3,11 +3,14 @@ import { AiOutlineCloseCircle } from 'react-icons/ai'
 
 interface Props {
   onClose(input: any): void
-  priceWithPlan: number
-  priceWithoutPlan: number
+  priceWithPlan?: number
+  priceWithoutPlan?: number
 }
 
 export const Results: React.FC<Props> = ({ onClose, priceWithPlan, priceWithoutPlan }) => {
+  const withPlanInReals = priceWithPlan?.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+  const withoutPlanInReals = priceWithPlan?.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+
   return (
     <div className={styles.container}>
       <AiOutlineCloseCircle
@@ -18,10 +21,10 @@ export const Results: React.FC<Props> = ({ onClose, priceWithPlan, priceWithoutP
       />
 
       <h2>Com FaleMais</h2>
-      <h1>R${priceWithPlan}</h1>
+      <h1>{withPlanInReals}</h1>
 
       <h2>Sem FaleMais</h2>
-      <h1>R${priceWithoutPlan}</h1>
+      <h1>{withoutPlanInReals}</h1>
     </div>
   )
 }

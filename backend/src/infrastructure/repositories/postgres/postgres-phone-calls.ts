@@ -32,6 +32,7 @@ export class PostgresPhoneCallRepository implements AddPhoneCallRepository, List
   async getByDDD(originDDD: string, destinationDDD: string): Promise<PhoneCall> {
     const result = await pool.query('SELECT * FROM phone_calls WHERE origin_ddd=$1 AND destination_ddd=$2', [originDDD, destinationDDD])
     const phoneCall = result.rows[0]
+    if (!phoneCall) return null
     return this.map(phoneCall)
   }
 }

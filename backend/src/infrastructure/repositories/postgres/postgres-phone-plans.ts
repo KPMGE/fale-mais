@@ -24,8 +24,6 @@ export class PostgresPhonePlanRepository implements AddPhonePlanRepository,
   }
 
   async add(phonePlan: PhonePlan): Promise<PhonePlan> {
-    console.log('new plan: ', phonePlan)
-
     const { id, name, durationInMinutes, tax } = phonePlan
     await pool.query('INSERT INTO phone_plans VALUES($1, $2, $3, $4)', [id, name, durationInMinutes, tax])
     return phonePlan
