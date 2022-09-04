@@ -24,6 +24,7 @@ $shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 8px 0 rgba(0, 0, 0, 0.12);
   
   ul {
     position: absolute;
+    padding: 0;
     left: 0;
     top: 2em;
     transition: all 0.3s ease;
@@ -31,12 +32,10 @@ $shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 8px 0 rgba(0, 0, 0, 0.12);
     transform-origin: 0 0;
     box-shadow: $shadow;
     button {
-      display: block;
       width: 100%;
       border: 0;
       background: #fff;
       padding: 1em 18px;
-      display: inline-block;
       white-space: pre;
       box-sizing: border-box;
       &:hover {
