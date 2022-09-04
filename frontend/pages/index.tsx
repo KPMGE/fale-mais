@@ -4,76 +4,70 @@ import { Results } from '../components/Results'
 import { useEffect, useState } from 'react'
 import { api } from '../axios/config'
 import { DropDownMenu } from '../components/DropDownMenu'
-
-type PhonePlan = {
-  id: string
-  name: string
-  durationInMinutes: number
-  tax: number
-}
-
-type PhoneCall = {
-  id: string
-  originDDD: string
-  destinationDDD: string
-  pricePerMinute: number
-}
+import { PhonePlan } from '../types/phone-plan'
+import { PhoneCall } from '../types/phone-call'
+import { getDestinationDDDs, getOriginDDDs, getPhonePlanId, getPlanNames } from '../helpers'
+import { checkFields } from '../helpers/check-fields'
+import Swal from 'sweetalert2'
 
 const Home: NextPage = () => {
-  const [resultsOpen, setResultsOpen] = useState<boolean>(true)
+  const [resultsOpen, setResultsOpen] = useState<boolean>(false)
   const [amountMinutes, setAmountMinutes] = useState<number | undefined>(undefined)
   const [phonePlanName, setPhonePlanName] = useState<string>('')
   const [originDDD, setOriginDDD] = useState<string>('')
   const [destinationDDD, setdestinationDDD] = useState<string>('')
-  const [priceWithPlan, setPriceWithPlan] = useState<number>(-1)
-  const [priceWithoutPlan, setPriceWithoutPlan] = useState<number>(-1)
+  const [priceWithPlan, setPriceWithPlan] = useState<number | undefined>(undefined)
+  const [priceWithoutPlan, setPriceWithoutPlan] = useState<number | undefined>(undefined)
 
+  // all phone plans
   const [plans, setPlans] = useState<PhonePlan[]>([])
+  // all phone calls
   const [calls, setCalls] = useState<PhoneCall[]>([])
 
-
-  const getPhonePlanId = (): string => {
-    const plan = plans.find(plan => plan.name === phonePlanName)
-    if (!plan) throw new Error('plan id not found!')
-    return plan.id
+  const onCloseResultsHandler = () => {
+    setResultsOpen(false)
+    setAmountMinutes(undefined)
   }
 
-  const calculatePrice = async () => {
-    console.log('plan id: ', getPhonePlanId())
+  const calcultaCallPrice = async (): Promise<boolean> => {
+    const fieldsOk = checkFields(phonePlanName, amountMinutes, originDDD, destinationDDD,)
+    if (!fieldsOk) return false
+
+    if (originDDD === destinationDDD) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'origin DDD and destination DDD must be different!',
+      })
+      return false
+    }
+
+    const phonePlanId = getPhonePlanId(plans, phonePlanName)
 
     try {
       const result = await api.post('/phone-call/price', {
-        phonePlanId: getPhonePlanId(),
+        phonePlanId,
         amountMinutes,
         originDDD,
         destinationDDD
       })
 
-      console.log('data: ', result.data)
       setPriceWithPlan(result.data.priceWithPlan)
       setPriceWithoutPlan(result.data.priceWithoutPlan)
     } catch (error) {
       console.log(error)
+      return false
     }
+
+    return true
   }
 
-  const calculatePriceHandler = async () => {
-    await calculatePrice()
-    setResultsOpen(false)
+  const calcultaCallPriceHandler = async () => {
+    const ok = await calcultaCallPrice()
+    setResultsOpen(ok)
   }
 
-  const getPlanNames = (): string[] => {
-    return plans.map(plan => plan.name)
-  }
-
-  const getOriginDDDs = (): string[] => {
-    return calls.map(call => call.originDDD)
-  }
-
-  const getDestinationDDDs = (): string[] => {
-    return calls.map(call => call.destinationDDD)
-  }
-
+  // loads phone plans and phone calls when the application first renders
   useEffect(() => {
     (async () => {
       try {
@@ -95,7 +89,7 @@ const Home: NextPage = () => {
       </header>
 
       <main className={styles.main}>
-        {resultsOpen ? (
+        {!resultsOpen ? (
           <>
             <input placeholder='Tempo (em minutos)'
               value={amountMinutes}
@@ -103,14 +97,14 @@ const Home: NextPage = () => {
               onChange={(e) => setAmountMinutes(Number(e.target.value))} />
 
             <div className={styles.dropDown}>
-              <DropDownMenu defaultValue="Origem" elements={getOriginDDDs()} onSelect={setOriginDDD} />
-              <DropDownMenu defaultValue="Destino" elements={getDestinationDDDs()} onSelect={setdestinationDDD} />
-              <DropDownMenu defaultValue="Plano" elements={getPlanNames()} onSelect={setPhonePlanName} />
+              <DropDownMenu defaultValue="Origem" elements={getOriginDDDs(calls)} onSelect={setOriginDDD} />
+              <DropDownMenu defaultValue="Destino" elements={getDestinationDDDs(calls)} onSelect={setdestinationDDD} />
+              <DropDownMenu defaultValue="Plano" elements={getPlanNames(plans)} onSelect={setPhonePlanName} />
             </div>
 
             <button
               className={styles.calculateButton}
-              onClick={() => calculatePriceHandler()
+              onClick={() => calcultaCallPriceHandler()
               }>
               Calcular
             </button>
@@ -119,7 +113,7 @@ const Home: NextPage = () => {
           <Results
             priceWithPlan={priceWithPlan}
             priceWithoutPlan={priceWithoutPlan}
-            onClose={() => setResultsOpen(true)} />
+            onClose={() => onCloseResultsHandler()} />
         )}
       </main>
     </div>
