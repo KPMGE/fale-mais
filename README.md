@@ -2,7 +2,7 @@
 
 This is a simple project called *FaleMais*. The goal is to make it easier for the users of a fake company, *Telzir*, to know the price they would pay with or without a plan from the company. So that, they can figure out if such a plan is worth for them. 
 
--- 
+---
 
 ## Backend
 The fist, and maybe the most important part of this system is the *backend*, it's role is saving the phone calls and phone plans and calculating the price with and without the plan.
@@ -37,7 +37,7 @@ the presentation layer is where we deal with how our *api* is going to serve its
 #### main
 As i said before, the main layer is where we couple all the components together. The nicest thing in this case is that, as we have decoupled everything else, it's kind of easy to assemble all the components together. More than that, we can use some design patterns to do that, just like the factory design pattern and the adapter one for example. 
 
--- 
+---
 
 ## Frontend
 The *frontend* part of this project was very simple, as the only role of it was to provide the user with some options to choose the origin
@@ -46,6 +46,7 @@ it helps writing better and more understandable code.
 
 So basically, i have made some simple *dropdown* menus for choosing the origin and destination ddds and the phone plan, plus a input for entering the duration of the call. Naturally, as i have all that data, i can make a request to the api and get back the price with and without the chosen plan.
 
+--- 
 
 ## How to run the project
 I know, all of that sounds cool, but how do i run it?
