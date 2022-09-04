@@ -8,8 +8,8 @@ import { PhonePlan } from '../types/phone-plan'
 import { PhoneCall } from '../types/phone-call'
 import { getDestinationDDDs, getOriginDDDs, getPhonePlanId, getPlanNames } from '../helpers'
 import { checkFields } from '../helpers/check-fields'
-import Swal from 'sweetalert2'
 import { CallPrices } from '../types/call-prices'
+import { alerError } from '../helpers/alert-error'
 
 const Home: NextPage = () => {
   const [resultsOpen, setResultsOpen] = useState<boolean>(false)
@@ -31,11 +31,7 @@ const Home: NextPage = () => {
     if (!fieldsOk) return false
 
     if (originDDD === destinationDDD) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'origin DDD and destination DDD must be different!',
-      })
+      alerError('origin DDD and destination DDD must be different!')
       return false
     }
 
@@ -52,6 +48,7 @@ const Home: NextPage = () => {
       setPrices({ priceWithoutPlan, priceWithPlan })
       return true
     } catch (error) {
+      alerError("Can't calculate price, please try again")
       console.log(error)
       return false
     }

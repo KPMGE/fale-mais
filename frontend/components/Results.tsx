@@ -15,7 +15,7 @@ export const Results: React.FC<Props> = ({ onClose, priceWithPlan, priceWithoutP
     <div className={styles.container}>
       <AiOutlineCloseCircle
         size={30}
-        color={'#6750A4'}
+        color={'#F47174'}
         className={styles.closeButton}
         onClick={onClose}
       />
