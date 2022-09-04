@@ -6,10 +6,10 @@ COPY . .
 
 # install yarn
 RUN npm --force install --global yarn
-RUN yarn install 
+RUN yarn install && yarn build
 
 USER node
 
 EXPOSE 3000
 
-CMD [ "yarn", "dev" ]
+CMD [ "yarn", "start" ]

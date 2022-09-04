@@ -9,7 +9,7 @@ interface Props {
 
 export const Results: React.FC<Props> = ({ onClose, priceWithPlan, priceWithoutPlan }) => {
   const withPlanInReals = priceWithPlan?.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
-  const withoutPlanInReals = priceWithPlan?.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+  const withoutPlanInReals = priceWithoutPlan?.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 
   return (
     <div className={styles.container}>

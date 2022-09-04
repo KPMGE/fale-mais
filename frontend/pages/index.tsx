@@ -9,27 +9,24 @@ import { PhoneCall } from '../types/phone-call'
 import { getDestinationDDDs, getOriginDDDs, getPhonePlanId, getPlanNames } from '../helpers'
 import { checkFields } from '../helpers/check-fields'
 import Swal from 'sweetalert2'
+import { CallPrices } from '../types/call-prices'
 
 const Home: NextPage = () => {
   const [resultsOpen, setResultsOpen] = useState<boolean>(false)
-  const [amountMinutes, setAmountMinutes] = useState<number | undefined>(undefined)
+  const [amountMinutes, setAmountMinutes] = useState<number>(-1)
   const [phonePlanName, setPhonePlanName] = useState<string>('')
   const [originDDD, setOriginDDD] = useState<string>('')
   const [destinationDDD, setdestinationDDD] = useState<string>('')
-  const [priceWithPlan, setPriceWithPlan] = useState<number | undefined>(undefined)
-  const [priceWithoutPlan, setPriceWithoutPlan] = useState<number | undefined>(undefined)
-
-  // all phone plans
+  const [prices, setPrices] = useState<CallPrices>()
   const [plans, setPlans] = useState<PhonePlan[]>([])
-  // all phone calls
   const [calls, setCalls] = useState<PhoneCall[]>([])
 
   const onCloseResultsHandler = () => {
+    setAmountMinutes(-1)
     setResultsOpen(false)
-    setAmountMinutes(undefined)
   }
 
-  const calcultaCallPrice = async (): Promise<boolean> => {
+  const calculateCallPrice = async (): Promise<boolean> => {
     const fieldsOk = checkFields(phonePlanName, amountMinutes, originDDD, destinationDDD,)
     if (!fieldsOk) return false
 
@@ -43,7 +40,6 @@ const Home: NextPage = () => {
     }
 
     const phonePlanId = getPhonePlanId(plans, phonePlanName)
-
     try {
       const result = await api.post('/phone-call/price', {
         phonePlanId,
@@ -52,18 +48,17 @@ const Home: NextPage = () => {
         destinationDDD
       })
 
-      setPriceWithPlan(result.data.priceWithPlan)
-      setPriceWithoutPlan(result.data.priceWithoutPlan)
+      const { priceWithoutPlan, priceWithPlan } = result.data
+      setPrices({ priceWithoutPlan, priceWithPlan })
+      return true
     } catch (error) {
       console.log(error)
       return false
     }
-
-    return true
   }
 
-  const calcultaCallPriceHandler = async () => {
-    const ok = await calcultaCallPrice()
+  const calculateCallPriceHandler = async () => {
+    const ok = await calculateCallPrice()
     setResultsOpen(ok)
   }
 
@@ -92,7 +87,7 @@ const Home: NextPage = () => {
         {!resultsOpen ? (
           <>
             <input placeholder='Tempo (em minutos)'
-              value={amountMinutes}
+              value={amountMinutes > 0 ? amountMinutes : undefined}
               type={'number'}
               onChange={(e) => setAmountMinutes(Number(e.target.value))} />
 
@@ -104,15 +99,15 @@ const Home: NextPage = () => {
 
             <button
               className={styles.calculateButton}
-              onClick={() => calcultaCallPriceHandler()
+              onClick={() => calculateCallPriceHandler()
               }>
               Calcular
             </button>
           </>
         ) : (
           <Results
-            priceWithPlan={priceWithPlan}
-            priceWithoutPlan={priceWithoutPlan}
+            priceWithPlan={prices?.priceWithPlan}
+            priceWithoutPlan={prices?.priceWithoutPlan}
             onClose={() => onCloseResultsHandler()} />
         )}
       </main>
