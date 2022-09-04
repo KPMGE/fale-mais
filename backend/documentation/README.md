@@ -13,6 +13,10 @@ POSTGRES_PORT=5432
 ```
 You can change them later according to your needs!
 
+
+## Loading csv files
+For this project, there is a way of loading csv files into the postgres database, so that, you can set some default plans. You can do that, pretty easily, just change the files *prices.csv* and *plans.csv* on the *assets* directory. As long as you follow the structure there, everything will work.
+
 ## Generating api route docs
 
 If you want to know all routes available in this application, it really simple,
