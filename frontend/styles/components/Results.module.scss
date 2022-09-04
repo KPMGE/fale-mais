@@ -9,9 +9,22 @@ $pink: #6750A4;
   width: 55%;
   border: 2px solid $pink;
   border-radius: 30px;
+  animation: from-top-to-bottom 1s ease-in-out;
 
   .closeButton {
     position: relative;
     margin-left: 90%;
+  }
+}
+
+@keyframes from-top-to-bottom {
+  0% {
+    transform: translateY(-100vh);
+  }
+  50% {
+    transform: translateY(10vh);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
